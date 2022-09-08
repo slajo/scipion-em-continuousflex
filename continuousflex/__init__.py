@@ -98,7 +98,7 @@ class Plugin(pwem.Plugin):
                        "cmake --build . ; "
                         "cp lib/* %s"
                        %
-                       (lapack_version, env.getTmpFolder(),env.getLibFolder()),
+                       (env.getTmpFolder(),lapack_version,env.getLibFolder()),
                        [env.getLibFolder()+"/liblapack.so",
                         env.getLibFolder()+"/liblapacke.so",
                         env.getLibFolder()+"/libblas.so"])])
