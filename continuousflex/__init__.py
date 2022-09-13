@@ -94,9 +94,9 @@ class Plugin(pwem.Plugin):
             neededProgs=['gfortran'],
             commands=[("cd %s/lapack-%s ; "
                        "mkdir BUILD ; cd BUILD ; "
-                       "cmake -DBUILD_SHARED_LIBS:BOOL=ON -DLAPACKE:BOOL=ON .. ; "
-                       "cmake --build . ; "
-                        "cp lib/* %s"
+                         "cmake -DBUILD_SHARED_LIBS:BOOL=ON -DLAPACKE:BOOL=ON .. ; "
+                         "cmake --build . ; "
+                          "cp lib/* %s"
                        %
                        (env.getTmpFolder(),lapack_version,env.getLibFolder()),
                        [env.getLibFolder()+"/liblapack.so",

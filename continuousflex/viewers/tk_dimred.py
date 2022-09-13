@@ -16,6 +16,7 @@ class PCAWindowDimred(TrajectoriesWindow, ClusteringWindow):
     def __init__(self, **kwargs):
         TrajectoriesWindow.__init__(self, **kwargs)
         self.saveClusterCallback = kwargs.get('saveClusterCallback', None)
+        self.saveCallback = kwargs.get('saveCallback', None)
         self.numberOfPoints = kwargs.get('numberOfPoints', 10)
 
         self._alpha=self.alpha

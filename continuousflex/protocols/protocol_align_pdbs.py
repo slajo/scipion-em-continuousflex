@@ -182,7 +182,7 @@ class FlexProtAlignPdb(ProtAnalysis3D):
             # add to MD
             trans_mat = np.zeros((4,4))
             trans_mat[:3,:3] = rot_mat
-            trans_mat[:,3] = tran
+            trans_mat[:,3][:3] = tran
             rot, tilt, psi,shftx, shfty, shftz = matrix2eulerAngles(trans_mat)
             index = alignXMD.addObject()
             alignXMD.setValue(md.MDL_ANGLE_ROT, rot, index)

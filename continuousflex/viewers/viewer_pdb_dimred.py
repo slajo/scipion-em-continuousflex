@@ -249,7 +249,7 @@ class FlexProtPdbDimredViewer(ProtocolViewer):
         # Get animation root
         animation = self.trajectoriesWindow.getClusterName()
         animationPath = prot._getExtraPath('animation_%s' % animation)
-        if not os.path.isdir:
+        if not os.path.isdir(animationPath):
             cleanPath(animationPath)
             makePath(animationPath)
         animationRoot = os.path.join(animationPath, '')
@@ -410,7 +410,7 @@ class FlexProtPdbDimredViewer(ProtocolViewer):
     def _saveAnimation(self, tkWindow):
         # get cluster name
         animationPath = self.protocol._getExtraPath("animation_" + tkWindow.getClusterName())
-        if not os.path.isdir:
+        if not os.path.isdir(animationPath):
             cleanPath(animationPath)
             makePath(animationPath)
         animationRoot = os.path.join(animationPath, '')
