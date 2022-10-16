@@ -30,6 +30,7 @@ from continuousflex.constants import *
 import pyworkflow.utils as pwutils
 getXmippPath = pwem.Domain.importFromPlugin("xmipp3.base", 'getXmippPath')
 from pyworkflow.tests import DataSet
+import subprocess
 
 _logo = "logo.png"
 __version__ = "3.1.4"
@@ -87,18 +88,28 @@ class Plugin(pwem.Plugin):
     def defineBinaries(cls, env):
         os.environ['PATH'] += os.pathsep + env.getBinFolder()
         lapack_version = "3.10.1"
+        cmakeVersion = subprocess.Popen(["cmake",
+                                         "--version"],
+                                        stdout=subprocess.PIPE
+                                        ).stdout.read().decode('utf-8').split(" ")[2][0]
+        if cmakeVersion == "3":
+            cmake = "cmake"
+        else:
+            print("CMake should be 3.2 or higher")
+            cmake = "cmake3"
+
         lapack = env.addLibrary(
             'lapack',
             url = "https://github.com/continuousflex-org/continuousflex-lib/blob/main/lapack-3.10.1.tar.gz?raw=true",
             tar='lapack-%s.tgz'% lapack_version,
-            neededProgs=['gfortran'],
+            neededProgs=['gfortran', cmake],
             commands=[("cd %s/lapack-%s ; "
                        "mkdir BUILD ; cd BUILD ; "
-                         "cmake -DBUILD_SHARED_LIBS:BOOL=ON -DLAPACKE:BOOL=ON .. ; "
-                         "cmake --build . ; "
+                         "%s -DBUILD_SHARED_LIBS:BOOL=ON -DLAPACKE:BOOL=ON .. ; "
+                         "%s --build . ; "
                           "cp lib/* %s"
                        %
-                       (env.getTmpFolder(),lapack_version,env.getLibFolder()),
+                       (env.getTmpFolder(),lapack_version,cmake, cmake, env.getLibFolder()),
                        [env.getLibFolder()+"/liblapack.so",
                         env.getLibFolder()+"/liblapacke.so",
                         env.getLibFolder()+"/libblas.so"])])
