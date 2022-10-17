@@ -34,6 +34,7 @@ import subprocess
 
 _logo = "logo.png"
 __version__ = "3.1.4"
+MD_NMMD_GENESIS_VERSION = "1.1"
 
 class Plugin(pwem.Plugin):
     _homeVar = CONTINUOUSFLEX_HOME
@@ -45,7 +46,7 @@ class Plugin(pwem.Plugin):
     def _defineVariables(cls):
         cls._defineEmVar(CONTINUOUSFLEX_HOME, 'xmipp')
         cls._defineEmVar(NMA_HOME,'nma')
-        cls._defineEmVar(GENESIS_HOME, 'MD-NMMD-Genesis-2.0')
+        cls._defineEmVar(GENESIS_HOME, 'MD-NMMD-Genesis-'+MD_NMMD_GENESIS_VERSION)
         cls._defineVar(VMD_HOME,'/usr/local/lib/vmd')
         cls._defineVar(MATLAB_HOME, '~/programs/Matlab')
 
@@ -141,9 +142,9 @@ class Plugin(pwem.Plugin):
                                   % env.getLibFolder(), 'nma_diag_arpack')],
                        neededProgs=['gfortran'], default=True)
 
-        target_branch = "nmmd_image_merge"
+        target_branch = "merge_genesis_1.4"
 
-        env.addPackage('MD-NMMD-Genesis', version='2.0', deps=[lapack],
+        env.addPackage('MD-NMMD-Genesis', version=MD_NMMD_GENESIS_VERSION, deps=[lapack],
                        buildDir='MD-NMMD-Genesis', tar="void.tgz",
                        commands=[('git clone -b %s https://github.com/continuousflex-org/MD-NMMD-Genesis.git . ; '
                                   'autoreconf -fi ;'
