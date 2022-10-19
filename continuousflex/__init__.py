@@ -33,8 +33,9 @@ from pyworkflow.tests import DataSet
 import subprocess
 
 _logo = "logo.png"
-__version__ = "3.1.4"
+
 MD_NMMD_GENESIS_VERSION = "1.1"
+__version__ = "3.2.0"
 
 class Plugin(pwem.Plugin):
     _homeVar = CONTINUOUSFLEX_HOME

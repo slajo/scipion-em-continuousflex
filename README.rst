@@ -48,7 +48,7 @@ You should also consider having VMD on your system for visualization.
 We assume that VMD is installed on your system in "/usr/local/lib/vmd".
 If VMD is installed but does not work, you may run the command "scipion3 config" and look for VMD_HOME in the config file (the config file is usually at ~/scipion3/config/scipion.conf)
 
-Note: GENESIS is not installed by default in continuousflex. To install GENESIS, you can use the Plugin Manager, or run the command line "scipion3 installb genesis"
+Note: GENESIS is not installed by default in continuousflex. To install GENESIS, you can use the Plugin Manager, or run the command line "scipion3 installb MD-NMMD-Genesis-1.0"
 
 Note: Matlab with its image processing toolbox is optional. It will only be needed if missing-wedge correction using Monte Carlo or volume denoising using BM4D are to be used
 We assume that Matlab is installed on your system in "~/programs/Matlab".
