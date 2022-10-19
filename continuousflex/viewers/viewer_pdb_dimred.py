@@ -211,8 +211,7 @@ class FlexProtPdbDimredViewer(ProtocolViewer):
     def viewPcaSinglularValues(self, paramName):
         pca = load(self.protocol._getExtraPath('pca_pickled.joblib'))
         fig = plt.figure('PCA singlular values')
-        plt.stem(pca.singular_values_)
-        plt.xticks(np.arange(0, len(pca.singular_values_), 1))
+        plt.stem(np.arange(1, len(pca.singular_values_)+1), pca.singular_values_)
         plt.show()
         pass
 
@@ -249,7 +248,7 @@ class FlexProtPdbDimredViewer(ProtocolViewer):
         # Get animation root
         animation = self.trajectoriesWindow.getClusterName()
         animationPath = prot._getExtraPath('animation_%s' % animation)
-        if not os.path.isdir:
+        if not os.path.isdir(animationPath):
             cleanPath(animationPath)
             makePath(animationPath)
         animationRoot = os.path.join(animationPath, '')
@@ -410,7 +409,7 @@ class FlexProtPdbDimredViewer(ProtocolViewer):
     def _saveAnimation(self, tkWindow):
         # get cluster name
         animationPath = self.protocol._getExtraPath("animation_" + tkWindow.getClusterName())
-        if not os.path.isdir:
+        if not os.path.isdir(animationPath):
             cleanPath(animationPath)
             makePath(animationPath)
         animationRoot = os.path.join(animationPath, '')
@@ -426,6 +425,11 @@ class FlexProtPdbDimredViewer(ProtocolViewer):
         if set(classID) != {0}:
             np.savetxt(animationRoot + 'clusters.txt', np.array(classID))
             saved.append('clusters.txt')
+
+        try :
+            self.trajectoriesWindow.plotter.figure.savefig(animationRoot + 'figure.png',dpi=500)
+        except:
+            pass
 
         if len(saved) != 0:
             self.trajectoriesWindow.showInfo('Successfully saved : %s.' % str(saved))

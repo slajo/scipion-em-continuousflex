@@ -30,8 +30,11 @@ from continuousflex.constants import *
 import pyworkflow.utils as pwutils
 getXmippPath = pwem.Domain.importFromPlugin("xmipp3.base", 'getXmippPath')
 from pyworkflow.tests import DataSet
+import subprocess
 
 _logo = "logo.png"
+
+MD_NMMD_GENESIS_VERSION = "1.1"
 __version__ = "3.2.0"
 
 class Plugin(pwem.Plugin):
@@ -44,7 +47,7 @@ class Plugin(pwem.Plugin):
     def _defineVariables(cls):
         cls._defineEmVar(CONTINUOUSFLEX_HOME, 'xmipp')
         cls._defineEmVar(NMA_HOME,'nma')
-        cls._defineEmVar(GENESIS_HOME, 'MD-NMMD-Genesis-1.0')
+        cls._defineEmVar(GENESIS_HOME, 'MD-NMMD-Genesis-'+MD_NMMD_GENESIS_VERSION)
         cls._defineVar(VMD_HOME,'/usr/local/lib/vmd')
         cls._defineVar(MATLAB_HOME, '~/programs/Matlab')
 
@@ -86,17 +89,36 @@ class Plugin(pwem.Plugin):
     @classmethod
     def defineBinaries(cls, env):
         os.environ['PATH'] += os.pathsep + env.getBinFolder()
+        lapack_version = "3.10.1"
+        cmakeVersion = subprocess.Popen(["cmake",
+                                         "--version"],
+                                        stdout=subprocess.PIPE
+                                        ).stdout.read().decode('utf-8').split(" ")[2][0]
+        if cmakeVersion == "3":
+            cmake = "cmake"
+        else:
+            print("CMake should be 3.2 or higher")
+            cmake = "cmake3"
+
         lapack = env.addLibrary(
             'lapack',
-            tar='lapack-3.5.0.tgz',
-            flags=['-DBUILD_SHARED_LIBS:BOOL=ON',
-                   '-DLAPACKE:BOOL=ON'],
-            cmake=True,
-            neededProgs=['gfortran'],
-            default=False)
+            url = "https://github.com/continuousflex-org/continuousflex-lib/blob/main/lapack-3.10.1.tar.gz?raw=true",
+            tar='lapack-%s.tgz'% lapack_version,
+            neededProgs=['gfortran', cmake],
+            commands=[("cd %s/lapack-%s ; "
+                       "mkdir BUILD ; cd BUILD ; "
+                         "%s -DBUILD_SHARED_LIBS:BOOL=ON -DLAPACKE:BOOL=ON .. ; "
+                         "%s --build . ; "
+                          "cp lib/* %s"
+                       %
+                       (env.getTmpFolder(),lapack_version,cmake, cmake, env.getLibFolder()),
+                       [env.getLibFolder()+"/liblapack.so",
+                        env.getLibFolder()+"/liblapacke.so",
+                        env.getLibFolder()+"/libblas.so"])])
 
         arpack = env.addLibrary(
             'arpack',
+            url = "https://github.com/continuousflex-org/continuousflex-lib/blob/main/arpack-96.tgz?raw=true",
             tar='arpack-96.tgz',
             neededProgs=['gfortran'],
             commands=[('cd ' + env.getBinFolder() + '; ln -s $(which gfortran) f77',
@@ -123,13 +145,13 @@ class Plugin(pwem.Plugin):
 
         target_branch = "merge_genesis_1.4"
 
-        env.addPackage('MD-NMMD-Genesis', version='1.0', deps=[lapack],
+        env.addPackage('MD-NMMD-Genesis', version=MD_NMMD_GENESIS_VERSION, deps=[lapack],
                        buildDir='MD-NMMD-Genesis', tar="void.tgz",
                        commands=[('git clone -b %s https://github.com/continuousflex-org/MD-NMMD-Genesis.git . ; '
                                   'autoreconf -fi ;'
                                   './configure LDFLAGS=-L%s ;'
-                                  'make install;' % (target_branch,env.getLibFolder()), "bin/atdyn")],
-                       neededProgs=['mpif90'], default=False)
+                                  'make install;' % (target_branch,env.getLibFolder()), ["bin/atdyn"])],
+                       neededProgs=['mpif90'], default=True)
 
         env.addPackage('DeepLearning', version='1.0',
                        tar='void.tgz',
