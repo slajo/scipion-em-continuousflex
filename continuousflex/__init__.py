@@ -85,6 +85,16 @@ class Plugin(pwem.Plugin):
         return environ
 
     @classmethod
+    def getContinuousFlexCmd(cls, args):
+        cmd = cls.getVar(MODEL_CONTINUOUSFLEX_ACTIVATION_VAR)
+        if not cmd:
+            cmd = cls.getCondaActivationCmd()
+            cmd += cls.getVar(MODEL_CONTINUOUSFLEX_ENV_ACTIVATION_VAR)
+        cmd += " && "
+        cmd += args
+        return cmd
+
+    @classmethod
     def getActivationCmd(cls, version):
         return 'conda activate continuousflex-' + version
 
