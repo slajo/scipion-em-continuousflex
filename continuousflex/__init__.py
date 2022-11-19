@@ -129,7 +129,7 @@ class Plugin(pwem.Plugin):
 
         def getCondaInstallation(version):
             installationCmd = cls.getCondaActivationCmd()
-            installationCmd += 'conda create -y -n continuousflex-' + version + ' python=3.9 && '
+            installationCmd += 'conda create -y -n continuousflex-' + version + ' --clone scipion3 && '
             installationCmd += cls.getActivationCmd(version) + ' && '
             installationCmd += 'conda install -y -c conda-forge arpack lapack && '
             installationCmd += 'touch env-created.txt'
@@ -163,9 +163,10 @@ class Plugin(pwem.Plugin):
         env.addPackage('MD-NMMD-Genesis', version=MD_NMMD_GENESIS_VERSION,
                        buildDir='MD-NMMD-Genesis', tar="void.tgz",
                        commands=[(cmd , ["bin/atdyn"])],
-                       neededProgs=['mpif90'], default=False)
+                       neededProgs=['mpif90'], default=True)
 
         cmd = cmd_1 + ' && pip install -U torch==1.10.1 torchvision==0.11.2 tensorboard==2.8.0 tqdm==4.64.0' \
+                      ' protobuf==3.20.3' \
                       ' && touch DeepLearning_Installed'
         env.addPackage('DeepLearning', version='1.0',
                        tar='void.tgz',
