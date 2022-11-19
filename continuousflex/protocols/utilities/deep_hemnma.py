@@ -1,9 +1,11 @@
+# Author: Ilyes Hamitouche
+
 import torch.nn as nn
 from torchvision import transforms
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from continuousflex.protocols.utilities.processing_dh.data import cryodata
-from continuousflex.protocols.utilities.processing_dh.models import deephemnma
+from processing_dh.data import cryodata
+from processing_dh.models import deephemnma
 import numpy as np
 import torch
 from torch.utils.data.sampler import SubsetRandomSampler

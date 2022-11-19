@@ -29,7 +29,7 @@ from pyworkflow.protocol.params import LabelParam, IntParam, EnumParam, StringPa
 from pyworkflow.viewer import ProtocolViewer, DESKTOP_TKINTER, WEB_DJANGO
 from subprocess import check_call
 import sys
-
+from continuousflex import Plugin
 
 
 
@@ -54,16 +54,11 @@ class FlexDeepHEMNMAViewer(ProtocolViewer):
     def _getVisualizeDict(self):
         return {'displaycurves': self._viewcurves}
 
-    # def _viewcurves(self, paramName):
-    #     import tkinter.messagebox as mb
-    #     logdir = self.protocol._getExtraPath('scalars/')
-    #     command = "tensorboard --port=6006 --logdir " + logdir +'&'
-    #     check_call(command, shell=True, stdout=sys.stdout, stderr=sys.stderr, env=None, cwd=None)
-    #     mb.showinfo('Visualize errors', 'Open http://localhost:6006/ in your browser to visualize training curves')
 
     def _viewcurves(self, pramName):
         import webbrowser
         logdir = self.protocol._getExtraPath('scalars/')
         command = "tensorboard --port=6006 --logdir " + logdir +'&'
+        command = Plugin.getContinuousFlexCmd(command)
         check_call(command, shell=True, stdout=sys.stdout, stderr=sys.stderr, env=None, cwd=None)
         webbrowser.open_new("http://localhost:6006/")
