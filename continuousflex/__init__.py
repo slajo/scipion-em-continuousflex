@@ -147,6 +147,10 @@ class Plugin(pwem.Plugin):
         cmd_1 = cls.getCondaActivationCmd() + ' ' + cls.getActivationCmd(CF_VERSION)
         cmd = cmd_1  + ' && cd ElNemo; make; mv nma_* ..'
 
+        # TODO: we may need to clean the LD_LIBRARY_PATH before compilation, and improve the folllwing installation
+        lib_path = os.environ['CONDA_PYTHON_EXE'][:-10] + 'envs/continuousflex-' + CF_VERSION + '/lib'
+        # copying blas library that is used by one of xmipp programs
+        os.system('ln -s ' + lib_path + '/libopenblas.so* ' + env.getLibFolder())
         env.addPackage('nma', version='3.1',
                        url='https://github.com/continuousflex-org/NMA_basic_code/raw/master/nma_v5.tar',
                        createBuildDir=False,
@@ -154,16 +158,16 @@ class Plugin(pwem.Plugin):
                        target="nma",
                        commands=[(cmd ,'nma_elnemo_pdbmat'),
                                  ('cd NMA_cart; LDFLAGS=-L%s make; mv nma_* ..'
-                                  % env.getLibFolder(), 'nma_diag_arpack')],
+                                  % lib_path, 'nma_diag_arpack')],
                        neededProgs=['gfortran'], default=True)
 
         target_branch = "merge_genesis_1.4"
         cmd = cmd_1 + ' && git clone -b %s https://github.com/continuousflex-org/MD-NMMD-Genesis.git . ; autoreconf -fi ;' \
-                      ' ./configure LDFLAGS=-L%s ; make install;' % (target_branch, env.getLibFolder())
+                      ' ./configure LDFLAGS=-L%s ; make install;' % (target_branch, lib_path)
         env.addPackage('MD-NMMD-Genesis', version=MD_NMMD_GENESIS_VERSION,
                        buildDir='MD-NMMD-Genesis', tar="void.tgz",
                        commands=[(cmd , ["bin/atdyn"])],
-                       neededProgs=['mpif90'], default=True)
+                       neededProgs=['mpif90'], default=False)
 
         cmd = cmd_1 + ' && pip install -U torch==1.10.1 torchvision==0.11.2 tensorboard==2.8.0 tqdm==4.64.0' \
                       ' protobuf==3.20.3' \
