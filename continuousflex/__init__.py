@@ -149,8 +149,10 @@ class Plugin(pwem.Plugin):
 
         # TODO: we may need to clean the LD_LIBRARY_PATH before compilation, and improve the folllwing installation
         lib_path = os.environ['CONDA_PYTHON_EXE'][:-10] + 'envs/continuousflex-' + CF_VERSION + '/lib'
-        # copying blas library that is used by one of xmipp programs
-        os.system('ln -s ' + lib_path + '/libopenblas.so* ' + env.getLibFolder())
+        # linking blas, arpack and lapack libraries to scipion lin
+        os.system('ln -s ' + lib_path + '/libopenblas* ' + env.getLibFolder())
+        os.system('ln -s ' + lib_path + '/libarpack* ' + env.getLibFolder())
+        os.system('ln -s ' + lib_path + '/liblapack* ' + env.getLibFolder())
         env.addPackage('nma', version='3.1',
                        url='https://github.com/continuousflex-org/NMA_basic_code/raw/master/nma_v5.tar',
                        createBuildDir=False,
