@@ -150,9 +150,9 @@ class Plugin(pwem.Plugin):
         # TODO: we may need to clean the LD_LIBRARY_PATH before compilation, and improve the folllwing installation
         lib_path = os.environ['CONDA_PYTHON_EXE'][:-10] + 'envs/continuousflex-' + CF_VERSION + '/lib'
         # linking blas, arpack and lapack libraries to scipion lin
-        os.system('ln -s ' + lib_path + '/libopenblas* ' + env.getLibFolder())
-        os.system('ln -s ' + lib_path + '/libarpack* ' + env.getLibFolder())
-        os.system('ln -s ' + lib_path + '/liblapack* ' + env.getLibFolder())
+        os.system('ln -f -s ' + lib_path + '/libopenblas* ' + env.getLibFolder())
+        os.system('ln -f -s ' + lib_path + '/libarpack* ' + env.getLibFolder())
+        os.system('ln -f -s ' + lib_path + '/liblapack* ' + env.getLibFolder())
         env.addPackage('nma', version='3.1',
                        url='https://github.com/continuousflex-org/NMA_basic_code/raw/master/nma_v5.tar',
                        createBuildDir=False,
@@ -169,7 +169,7 @@ class Plugin(pwem.Plugin):
         env.addPackage('MD-NMMD-Genesis', version=MD_NMMD_GENESIS_VERSION,
                        buildDir='MD-NMMD-Genesis', tar="void.tgz",
                        commands=[(cmd , ["bin/atdyn"])],
-                       neededProgs=['mpif90'], default=False)
+                       neededProgs=['mpif90'], default=True)
 
         cmd = cmd_1 + ' && pip install -U torch==1.10.1 torchvision==0.11.2 tensorboard==2.8.0 tqdm==4.64.0' \
                       ' protobuf==3.20.3' \
