@@ -132,6 +132,7 @@ class Plugin(pwem.Plugin):
             installationCmd += 'conda create -y -n continuousflex-' + version + ' --clone scipion3 && '
             installationCmd += cls.getActivationCmd(version) + ' && '
             installationCmd += 'conda install -y -c conda-forge arpack lapack && '
+            installationCmd += 'pip install umap-learn && '
             installationCmd += 'touch env-created.txt'
             return installationCmd
 
