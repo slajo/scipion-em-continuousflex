@@ -172,7 +172,7 @@ class FlexProtDimredPdb(ProtAnalysis3D):
             Y_dump = self._getTmpPath('Y_dump.pkl')
             args = "%d %d %d %s %s %s" % (self.reducedDim.get(), 15, 1000,
                                        pdbs_dump, self._getExtraPath('pca_pickled.joblib'), Y_dump)
-            script_path = continuousflex.__path__[0] + '/protocols/utilities/umap_run.py'
+            script_path = continuousflex.__path__[0] + '/protocols/utilities/umap_run.py '
             command = "python " + script_path + args
             command = Plugin.getContinuousFlexCmd(command)
             check_call(command, shell=True, stdout=sys.stdout, stderr=sys.stderr,
