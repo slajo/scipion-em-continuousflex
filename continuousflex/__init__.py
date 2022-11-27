@@ -30,10 +30,9 @@ import pwem
 from continuousflex.constants import *
 import pyworkflow.utils as pwutils
 getXmippPath = pwem.Domain.importFromPlugin("xmipp3.base", 'getXmippPath')
-from pyworkflow.tests import DataSet
-import subprocess
 import datetime
 from scipion.install.funcs import VOID_TGZ
+import continuousflex
 
 _logo = "logo.png"
 
@@ -56,8 +55,7 @@ class Plugin(pwem.Plugin):
     def _defineVariables(cls):
         cls._defineVar(MODEL_CONTINUOUSFLEX_ACTIVATION_VAR, '')
         cls._defineVar(MODEL_CONTINUOUSFLEX_ENV_ACTIVATION_VAR, cls.getActivationCmd(CF_VERSION))
-        # TODO: review why continuousflex_home is still xmipp? Maybe this can be removed
-        cls._defineEmVar(CONTINUOUSFLEX_HOME, 'xmipp')
+        cls._defineEmVar(CONTINUOUSFLEX_HOME, continuousflex.__path__[0])
         cls._defineEmVar(NMA_HOME,'nma')
         cls._defineEmVar(GENESIS_HOME, 'MD-NMMD-Genesis-'+MD_NMMD_GENESIS_VERSION)
         cls._defineVar(VMD_HOME,'/usr/local/lib/vmd')
@@ -105,16 +103,6 @@ class Plugin(pwem.Plugin):
     @classmethod
     def defineBinaries(cls, env):
         os.environ['PATH'] += os.pathsep + env.getBinFolder()
-        # TODO: this should be checked only when needed
-        cmakeVersion = subprocess.Popen(["cmake",
-                                         "--version"],
-                                        stdout=subprocess.PIPE
-                                        ).stdout.read().decode('utf-8').split(" ")[2][0]
-        if cmakeVersion == "3":
-            cmake = "cmake"
-        else:
-            print("CMake should be 3.2 or higher")
-            cmake = "cmake3"
 
         def defineCondaInstallation(version):
             installed = "last-pull-%s.txt" % datetime.datetime.now().strftime("%y%h%d-%H%M%S")
@@ -164,14 +152,6 @@ class Plugin(pwem.Plugin):
                                   % lib_path, 'nma_diag_arpack')],
                        neededProgs=['gfortran'], default=True)
 
-        target_branch = "merge_genesis_1.4"
-        cmd = cmd_1 + ' && git clone -b %s https://github.com/continuousflex-org/MD-NMMD-Genesis.git . ; autoreconf -fi ;' \
-                      ' ./configure LDFLAGS=-L%s ; make install;' % (target_branch, lib_path)
-        env.addPackage('MD-NMMD-Genesis', version=MD_NMMD_GENESIS_VERSION,
-                       buildDir='MD-NMMD-Genesis', tar="void.tgz",
-                       commands=[(cmd , ["bin/atdyn"])],
-                       neededProgs=['mpif90'], default=True)
-
         cmd = cmd_1 + ' && pip install -U torch==1.10.1 torchvision==0.11.2 tensorboard==2.8.0 tqdm==4.64.0' \
                       ' protobuf==3.20.3' \
                       ' && touch DeepLearning_Installed'
@@ -189,25 +169,10 @@ class Plugin(pwem.Plugin):
                        neededProgs=[''],
                        default=True)
 
-# TODO: maybe the dictionary and dataset can be moved somewhere else?
-files_dictionary = {'pdb': 'pdb/AK.pdb', 'particles': 'particles/img.stk', 'vol': 'volumes/AK_LP10.vol',
-                    'precomputed_atomic': 'gold/images_WS_atoms.xmd',
-                    'precomputed_pseudoatomic': 'gold/images_WS_pseudoatoms.xmd',
-                    'small_stk': 'test_alignment_10images/particles/smallstack_img.stk',
-                    'subtomograms':'HEMNMA_3D/subtomograms/*.vol',
-                    'precomputed_HEMNMA3D_atoms':'HEMNMA_3D/gold/precomputed_atomic.xmd',
-                    'precomputed_HEMNMA3D_pseudo':'HEMNMA_3D/gold/precomputed_pseudo.xmd',
-
-                    'charmm_prm':'genesis/par_all36_prot.prm',
-                    'charmm_top':'genesis/top_all36_prot.rtf',
-                    '1ake_pdb':'genesis/1ake.pdb',
-                    '1ake_vol':'genesis/1ake.mrc',
-                    '4ake_pdb':'genesis/4ake.pdb',
-                    '4ake_aa_pdb':'genesis/4ake_aa.pdb',
-                    '4ake_aa_psf':'genesis/4ake_aa.psf',
-                    '4ake_ca_pdb':'genesis/4ake_ca.pdb',
-                    '4ake_ca_top':'genesis/4ake_ca.top',
-                    }
-DataSet(name='nma_V2.0', folder='nma_V2.0', files=files_dictionary,
-        url='https://raw.githubusercontent.com/continuousflex-org/testdata-continuousflex/main')
-
+        target_branch = "merge_genesis_1.4"
+        cmd = cmd_1 + ' && git clone -b %s https://github.com/continuousflex-org/MD-NMMD-Genesis.git . ; autoreconf -fi ;' \
+                      ' ./configure LDFLAGS=-L%s ; make install;' % (target_branch, lib_path)
+        env.addPackage('MD-NMMD-Genesis', version=MD_NMMD_GENESIS_VERSION,
+                       buildDir='MD-NMMD-Genesis', tar="void.tgz",
+                       commands=[(cmd , ["bin/atdyn"])],
+                       neededProgs=['mpif90'], default=True)
