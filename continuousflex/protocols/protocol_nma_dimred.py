@@ -3,7 +3,7 @@
 # * Authors:
 # * J.M. De la Rosa Trevin (jmdelarosa@cnb.csic.es), Nov 2014
 # * Slavica Jonic (slavica.jonic@upmc.fr)
-# * Mohamad Harastani (mohamad.harastani@upmc.fr)
+# * Mohamad Harastani (mohamad.harastani@igbmc.fr)
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by

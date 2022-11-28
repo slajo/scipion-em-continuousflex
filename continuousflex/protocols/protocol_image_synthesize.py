@@ -1,4 +1,4 @@
-# * Authors:  Mohamad Harastani          (mohamad.harastani@upmc.fr)
+# * Authors:  Mohamad Harastani          (mohamad.harastani@igbmc.fr)
 # *           Rémi Vuillemot             (remi.vuillemot@upmc.fr)
 # *
 # * IMPMC, UPMC Sorbonne University
@@ -40,8 +40,6 @@ import numpy as np
 import glob
 from joblib import dump
 from math import cos, sin, pi
-import xmippLib
-import math
 from continuousflex.protocols.convert import matrix2eulerAngles
 
 NMA_ALIGNMENT_WAV = 0

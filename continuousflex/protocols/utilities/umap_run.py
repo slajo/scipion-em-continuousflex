@@ -1,3 +1,5 @@
+# By Mohamad Harastani and Remi Vuillemot
+
 from umap import UMAP
 import sys
 from joblib import load, dump

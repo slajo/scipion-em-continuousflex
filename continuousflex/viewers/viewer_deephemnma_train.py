@@ -20,21 +20,17 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-"""
-This module implement the wrappers aroung Xmipp CL2D protocol
-visualization program.
-"""
+
 from continuousflex.protocols.protocol_deep_hemnma_train import FlexProtDeepHEMNMATrain
-from pyworkflow.protocol.params import LabelParam, IntParam, EnumParam, StringParam
+from pyworkflow.protocol.params import LabelParam
 from pyworkflow.viewer import ProtocolViewer, DESKTOP_TKINTER, WEB_DJANGO
 from subprocess import check_call
 import sys
 from continuousflex import Plugin
 
 
-
 class FlexDeepHEMNMAViewer(ProtocolViewer):
-    """ Visualization of results from the deepHEMNMA protocol
+    """ Visualization of results from the deepHEMNMA training protocol
     """
     _label = 'viewer deepHEMNMA'
     _targets = [FlexProtDeepHEMNMATrain]

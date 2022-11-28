@@ -1,5 +1,5 @@
 # **************************************************************************
-# * Authors:    Mohamad Harastani            (mohamad.harastani@upmc.fr)
+# * Authors:    Mohamad Harastani            (mohamad.harastani@igbmc.fr)
 # *             Slavica Jonic                (slavica.jonic@upmc.fr)
 # *
 # * This program is free software; you can redistribute it and/or modify
@@ -21,12 +21,6 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-from continuousflex.protocols.data import PathData
-
-"""
-This module implement the wrappers around Xmipp CL2D protocol
-visualization program.
-"""
 
 import os
 from os.path import basename, join, exists, isfile
@@ -37,13 +31,12 @@ from pyworkflow.viewer import (ProtocolViewer, DESKTOP_TKINTER, WEB_DJANGO)
 from pyworkflow.protocol.params import StringParam, LabelParam
 from pwem.objects import SetOfParticles
 from pyworkflow.gui.browser import FileBrowserWindow
-from continuousflex.protocols.protocol_heteroflow_dimred import FlexProtDimredHeteroFlow
+from continuousflex.protocols.protocol_tomoflow_dimred import FlexProtDimredHeteroFlow
 from continuousflex.protocols.data import Point, Data
 from .plotter_vol import FlexNmaVolPlotter
 from continuousflex.viewers.nma_vol_gui import ClusteringWindowVolHeteroFlow
 from continuousflex.viewers.nma_vol_gui import TrajectoriesWindowVolHeteroFlow
 from pwem.viewers.viewer_chimera import Chimera
-
 from joblib import load, dump
 from continuousflex.protocols.utilities.spider_files3 import open_volume, save_volume
 import continuousflex
@@ -52,7 +45,6 @@ from subprocess import check_call
 import sys
 import matplotlib.pyplot as plt
 from pwem.emlib.image import ImageHandler
-
 from pyworkflow.protocol import params
 
 FIGURE_LIMIT_NONE = 0
@@ -69,7 +61,7 @@ POINT_LIMITS = 1
 
 
 class FlexDimredHeteroFlowViewer(ProtocolViewer):
-    """ Visualization of results from the NMA protocol
+    """ Visualization of results from TomoFlow Dimred protocol
     """
     _label = 'viewer heteroflow dimred'
     _targets = [FlexProtDimredHeteroFlow]
@@ -301,9 +293,9 @@ class FlexDimredHeteroFlowViewer(ProtocolViewer):
         partSet.write()
         partSet.close()
 
-        from continuousflex.protocols.protocol_batch_cluster_heteroflow import FlexBatchProtHeteroFlowCluster
+        from continuousflex.protocols.protocol_batch_cluster_tomoflow import FlexBatchProtTomoFlowCluster
 
-        newProt = project.newProtocol(FlexBatchProtHeteroFlowCluster)
+        newProt = project.newProtocol(FlexBatchProtTomoFlowCluster)
         clusterName = self.clusterWindow.getClusterName()
         if clusterName:
             newProt.setObjLabel(clusterName)

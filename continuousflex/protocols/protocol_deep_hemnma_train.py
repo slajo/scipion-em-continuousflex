@@ -23,7 +23,6 @@
 # *
 # **************************************************************************
 
-
 from pyworkflow.protocol.params import PointerParam
 import pyworkflow.protocol.params as params
 from pwem.protocols import ProtAnalysis3D

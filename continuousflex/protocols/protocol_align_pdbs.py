@@ -1,5 +1,6 @@
 # **************************************************************************
-# * Author:  Mohamad Harastani          (mohamad.harastani@upmc.fr)
+# * Authors:  Mohamad Harastani          (mohamad.harastani@igbmc.fr)
+# *           Remi Vuillemot             (remi.vuillemot@upmc.fr)
 # * IMPMC, UPMC Sorbonne University
 # *
 # * This program is free software; you can redistribute it and/or modify
@@ -20,6 +21,7 @@
 # *  All comments concerning this program package may be sent to the
 # *  e-mail address 'scipion@cnb.csic.es'
 # **************************************************************************
+
 from pyworkflow.protocol.params import (PointerParam, EnumParam, IntParam)
 from pwem.protocols import ProtAnalysis3D
 from pyworkflow.protocol import params
@@ -37,6 +39,7 @@ import pwem.emlib.metadata as md
 PDB_SOURCE_PATTERN = 0
 PDB_SOURCE_OBJECT = 1
 PDB_SOURCE_TRAJECT = 2
+
 
 class FlexProtAlignPdb(ProtAnalysis3D):
     """ Protocol to perform rigid body alignement on a set of PDB files. """

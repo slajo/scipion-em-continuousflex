@@ -29,6 +29,7 @@ from xmipp3.convert import writeSetOfVolumes, writeSetOfParticles, readSetOfVolu
 from pwem.constants import ALIGN_PROJ
 from continuousflex.protocols.convert import matrix2eulerAngles
 
+
 class ProtNMMDRefine(ProtGenesis):
     """ Protocol to perform NMMD refinement using GENESIS """
     _label = 'NMMD refine'

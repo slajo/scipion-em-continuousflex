@@ -1,5 +1,5 @@
 # **************************************************************************
-# * Authors:    Mohamad Harastani            (mohamad.harastani@upmc.fr)
+# * Authors:    Mohamad Harastani            (mohamad.harastani@igbmc.fr)
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ IMPORT_FLOWS = 0
 FIND_FLOWS = 1
 
 class FlexProtHeteroFlow(ProtAnalysis3D):
-    """ Protocol for HeteroFlow. """
+    """ Protocol for TomoFlow. """
     _label = 'tomoflow protocol'
 
     # --------------------------- DEFINE param functions --------------------------------------------

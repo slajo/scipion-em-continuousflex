@@ -21,6 +21,7 @@
 # *  All comments concerning this program package may be sent to the
 # *  e-mail address 'scipion@cnb.csic.es'
 # **************************************************************************
+
 import os.path
 import subprocess
 import pyworkflow.protocol.params as params
@@ -29,7 +30,6 @@ from pwem.objects.data import AtomStruct, SetOfAtomStructs, SetOfPDBs, SetOfVolu
 import mrcfile
 from pwem.utils import runProgram
 from pyworkflow.utils import getListFromRangeString
-
 from .utilities.genesis_utilities import *
 from .utilities.pdb_handler import ContinuousFlexPDBHandler
 import pyworkflow.utils as pwutils
@@ -37,6 +37,7 @@ from pyworkflow.utils import runCommand, buildRunCommand
 from xmipp3.convert import writeSetOfParticles, writeSetOfVolumes
 from pwem.convert.atom_struct import cifToPdb
 from continuousflex import Plugin
+
 
 class ProtGenesis(EMProtocol):
     """ Protocol to perform MD/NMMD simulation based on GENESIS. """

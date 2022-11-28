@@ -21,13 +21,8 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-"""
-This module implement the wrappers aroung Xmipp CL2D protocol
-visualization program.
-"""
 
 from os.path import basename
-
 from pwem.emlib import MetaData, MDL_ORDER
 from pyworkflow.protocol.params import StringParam
 from pyworkflow.viewer import (ProtocolViewer, DESKTOP_TKINTER, WEB_DJANGO)
@@ -46,8 +41,9 @@ Y_LIMITS = 1
 Z_LIMITS_NONE = 0
 Z_LIMITS = 1
 
+
 class FlexDeepHEMNMAinferViewer(ProtocolViewer):
-    """ Visualization of results from the NMA protocol
+    """ Visualization of results from the deepHEMNMA inference protocol
     """
     _label = 'viewer nma alignment'
     _targets = [FlexProtDeepHEMNMAInfer]
@@ -174,7 +170,6 @@ class FlexDeepHEMNMAinferViewer(ProtocolViewer):
             else:
                 self.getData().YIND = modeList[1]
                 if dim == 2:
-                    # plotter.plotArray2D("Normal-mode amplitudes: %s vs %s" % tuple(baseList), *baseList)
                     plotter.plotArray2D_xy("Normal-mode amplitudes: %s vs %s" % tuple(baseList), *baseList)
                 elif dim == 3:
                     self.getData().ZIND = modeList[2]
@@ -193,6 +188,5 @@ class FlexDeepHEMNMAinferViewer(ProtocolViewer):
             pointData = list(map(float, particle._xmipp_nmaDisplacements))
             data.addPoint(Point(pointId=particle.getObjId(),
                                 data=pointData,
-                                # weight=particle._xmipp_cost.get()))
                                 weight=0))
         return data
