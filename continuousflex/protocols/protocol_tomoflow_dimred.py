@@ -196,21 +196,6 @@ class FlexProtDimredHeteroFlow(ProtAnalysis3D):
     def createOutputStep(self):
         pass
 
-    # --------------------------- INFO functions --------------------------------------------
-    def _summary(self):
-        summary = []
-        return summary
-
-    def _validate(self):
-        errors = []
-        return errors
-
-    def _citations(self):
-        return []
-
-    def _methods(self):
-        return []
-
     # --------------------------- UTILS functions --------------------------------------------
 
     def getInputParticles(self):
@@ -238,3 +223,18 @@ class FlexProtDimredHeteroFlow(ProtAnalysis3D):
 
     def getMethodName(self):
         return DIMRED_VALUES[self.dimredMethod.get()]
+
+    # --------------------------- INFO functions --------------------------------------------
+    def _summary(self):
+        summary = []
+        return summary
+
+    def _validate(self):
+        errors = []
+        return errors
+
+    def _citations(self):
+        return ['harastani2022tomoflow','harastani2022continuousflex']
+
+    def _methods(self):
+        return []

@@ -374,7 +374,7 @@ class FlexProtAlignmentNMAVol(ProtAnalysis3D):
         return errors
 
     def _citations(self):
-        return ['harastani2020hybrid','Jonic2005', 'Sorzano2004b', 'Jin2014']
+        return ['harastani2021hemnma','harastani2022continuousflex']
 
     def _methods(self):
         pass

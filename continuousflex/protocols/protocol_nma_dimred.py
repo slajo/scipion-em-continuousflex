@@ -258,7 +258,7 @@ class FlexProtDimredNMA(ProtAnalysis3D):
         return errors
 
     def _citations(self):
-        return []
+        return ['harastani2022continuousflex','Jin2014']
 
     def _methods(self):
         return []

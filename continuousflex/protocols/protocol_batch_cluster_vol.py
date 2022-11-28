@@ -178,7 +178,7 @@ class FlexBatchProtNMAClusterVol(BatchProtocol):
         return errors
 
     def _citations(self):
-        return []
+        return ['harastani2022continuousflex']
 
     def _methods(self):
         return []

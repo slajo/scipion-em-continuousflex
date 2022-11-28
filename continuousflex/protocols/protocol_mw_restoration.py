@@ -176,7 +176,7 @@ class FlexProtMissingWedgeRestoration(ProtAnalysis3D):
         return summary
 
     def _citations(self):
-        return ['moebel2020monte']
+        return ['harastani2022continuousflex','moebel2020monte']
 
     def _methods(self):
         pass

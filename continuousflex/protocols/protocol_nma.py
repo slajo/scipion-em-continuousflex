@@ -348,3 +348,14 @@ class FlexProtNMA(FlexProtNMABase):
                 if atom.type != " P":
                     return False
         return True
+
+    # --------------------------- INFO functions --------------------------------------------
+    def _summary(self):
+        summary = []
+        return summary
+
+    def _citations(self):
+        return ['harastani2022continuousflex']
+
+    def _methods(self):
+        pass

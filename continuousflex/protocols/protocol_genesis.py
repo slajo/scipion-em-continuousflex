@@ -657,7 +657,7 @@ class ProtGenesis(EMProtocol):
         return errors
 
     def _citations(self):
-        return ["kobayashi2017genesis","vuillemot2022NMMD"]
+        return ["kobayashi2017genesis","vuillemot2022NMMD","harastani2022continuousflex"]
 
     def _methods(self):
         pass

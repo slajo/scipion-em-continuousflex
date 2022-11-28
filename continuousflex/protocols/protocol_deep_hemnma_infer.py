@@ -145,7 +145,7 @@ class FlexProtDeepHEMNMAInfer(ProtAnalysis3D):
         return errors
     
     def _citations(self):
-        return []
+        return ['harastani2022continuousflex','hamitouche2022deephemnma']
     
     def _methods(self):
         return []

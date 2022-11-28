@@ -504,7 +504,7 @@ class FlexProtSubtomogramAveraging(ProtAnalysis3D):
         return summary
 
     def _citations(self):
-        return ['CHEN2013235']
+        return ['harastani2022continuousflex','CHEN2013235']
 
     def _methods(self):
         pass

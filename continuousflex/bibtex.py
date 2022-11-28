@@ -167,6 +167,32 @@ abstract = {In cryoelectron tomography alignment and averaging of subtomograms, 
   publisher={Elsevier}
 }
 
+@article{harastani2022tomoflow,
+  title={TomoFlow: Analysis of continuous conformational variability of macromolecules in cryogenic subtomograms based on 3D dense optical flow},
+  author={Harastani, Mohamad and Eltsov, Mikhail and Leforestier, Am{\'e}lie and Jonic, Slavica},
+  journal={Journal of molecular biology},
+  volume={434},
+  number={2},
+  pages={167381},
+  year={2022},
+  publisher={Elsevier}
+}
+
+@article{harastani2021hemnma,
+  title={Hemnma-3d: Cryo electron tomography method based on normal mode analysis to study continuous conformational variability of macromolecular complexes},
+  author={Harastani, Mohamad and Eltsov, Mikhail and Leforestier, Am{\'e}lie and Jonic, Slavica},
+  journal={Frontiers in molecular biosciences},
+  pages={317},
+  year={2021},
+  publisher={Frontiers}
+}
+
+@article{hamitouche2022deephemnma,
+  title={DeepHEMNMA: ResNet-based hybrid analysis of continuous conformational heterogeneity in cryo-EM single particle images},
+  author={Hamitouche, Ilyes and Jonic, Slavica},
+  journal={Frontiers in Molecular Biosciences},
+  year={2022}
+}
 
 """
 

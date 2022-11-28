@@ -166,7 +166,7 @@ class FlexProtApplyVolSetAlignment(ProtAnalysis3D):
         return summary
 
     def _citations(self):
-        return []
+        return ['harastani2022continuousflex']
 
     def _methods(self):
         pass

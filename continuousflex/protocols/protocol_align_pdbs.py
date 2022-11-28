@@ -263,7 +263,7 @@ class FlexProtAlignPdb(ProtAnalysis3D):
         return errors
 
     def _citations(self):
-        return ['harastani2020hybrid','Jin2014']
+        return ['harastani2022continuousflex']
 
     def _methods(self):
         pass

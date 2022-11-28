@@ -284,7 +284,7 @@ class ProtGenerateTopology(EMProtocol):
         return summary
 
     def _citations(self):
-        return []
+        return ['harastani2022continuousflex','vuillemot2022NMMD']
 
     def _methods(self):
         pass

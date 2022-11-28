@@ -36,7 +36,7 @@ from .protocol_batch_cluster_vol import FlexBatchProtNMAClusterVol
 from .protocol_nma_alignment_vol import FlexProtAlignmentNMAVol
 from .protocol_nma_dimred_vol import FlexProtDimredNMAVol
 from .protocol_subtomogram_averaging import FlexProtSubtomogramAveraging
-from .protocol_missing_restoration import FlexProtMissingWedgeRestoration
+from .protocol_mw_restoration import FlexProtMissingWedgeRestoration
 from .protocol_apply_volumeset_alignment import FlexProtApplyVolSetAlignment
 from .protocol_tomoflow import FlexProtHeteroFlow
 from .protocol_tomoflow_dimred import FlexProtDimredHeteroFlow

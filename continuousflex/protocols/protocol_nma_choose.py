@@ -245,4 +245,4 @@ class FlexrotNMAChoose(FlexProtConvertToPseudoAtomsBase, FlexProtNMABase):
         return summary
 
     def _citations(self):
-        return ['Nogales2013', 'Jin2014']
+        return ['harastani2022continuousflex','Nogales2013', 'Jin2014']
