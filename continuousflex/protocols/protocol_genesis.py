@@ -32,11 +32,11 @@ from pyworkflow.utils import getListFromRangeString
 
 from .utilities.genesis_utilities import *
 from .utilities.pdb_handler import ContinuousFlexPDBHandler
-from xmipp3 import Plugin
 import pyworkflow.utils as pwutils
 from pyworkflow.utils import runCommand, buildRunCommand
 from xmipp3.convert import writeSetOfParticles, writeSetOfVolumes
 from pwem.convert.atom_struct import cifToPdb
+from continuousflex import Plugin
 
 class ProtGenesis(EMProtocol):
     """ Protocol to perform MD/NMMD simulation based on GENESIS. """
@@ -516,8 +516,11 @@ class ProtGenesis(EMProtocol):
         params = "%s > %s.log" % (inp_file,outPref)
         env = self.getGenesisEnv()
         env.set("OMP_NUM_THREADS",str(self.numberOfThreads.get()))
-
-        self.runJob(programname,params, env=env)
+        command = buildRunCommand(programname, params, numberOfMpi=self.numberOfMpi.get(),
+                              hostConfig=self._stepsExecutor.hostConfig,
+                              env=env)
+        command = Plugin.getContinuousFlexCmd(command)
+        runCommand(command, env=env)
 
     def runSimulationParallel(self):
         """
@@ -552,6 +555,7 @@ class ProtGenesis(EMProtocol):
         # Build parallel command
         parallel_cmd = "seq -f \"%%06g\" 1 %i | parallel -P %i \" %s\" " % (
         self.getNumberOfSimulation(),self.numberOfMpi.get()//numberOfMpiPerFit, cmd)
+        parallel_cmd = Plugin.getContinuousFlexCmd(parallel_cmd)
 
         print("Command : %s" % cmd)
         print("Parallel Command : %s" % parallel_cmd)

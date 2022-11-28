@@ -20,7 +20,7 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-
+import joblib
 from pwem.protocols import ProtAnalysis3D
 import xmipp3.convert
 import pwem.emlib.metadata as md
@@ -36,6 +36,7 @@ from subprocess import check_call
 from pwem.utils import runProgram
 from pwem.emlib.image import ImageHandler
 import numpy as np
+from continuousflex import Plugin
 
 REFERENCE_EXT = 0
 REFERENCE_STA = 1
@@ -222,6 +223,7 @@ class FlexProtHeteroFlow(ProtAnalysis3D):
                                                                    path_flowx, path_flowy, path_flowz, gpu_p)
                 script_path = continuousflex.__path__[0] + '/protocols/utilities/optflow_run.py'
                 command = "python " + script_path + args
+                command = Plugin.getContinuousFlexCmd(command)
                 check_call(command, shell=True, stdout=sys.stdout, stderr=sys.stderr,
                            env=None, cwd=None)
 
@@ -264,7 +266,6 @@ class FlexProtHeteroFlow(ProtAnalysis3D):
                    self._getExtraPath('reference.spi'))
 
     def warpByFlow(self):
-        import farneback3d
         makePath(self._getExtraPath() + '/estimated_volumes')
         estVol_root = self._getExtraPath() + '/estimated_volumes/'
         reference_fn = self._getExtraPath('reference.spi')
@@ -280,12 +281,24 @@ class FlexProtHeteroFlow(ProtAnalysis3D):
         for objId in mdImgs:
             N += 1
 
+        # dumping the reference volume to use it in an outside script
+        ref_dump = self._getTmpPath('ref_dump.pkl')
+        joblib.dump(reference, ref_dump)
+
+        # TODO: this loop can be parallelized, but it is not too computationally demanding
         for i in range(1, N + 1):
             print('Warping a copy of the reference volume by the optical flow ', i)
-            flow_i = self.read_optical_flow_by_number(i)
-            warped_i = farneback3d.warp_by_flow(reference, np.float32(flow_i))
+            flow_i = np.float32(self.read_optical_flow_by_number(i))
+            # dumping the optical flow to use it in an outside script
+            flow_dump = self._getTmpPath('flow_dump.pkl')
+            joblib.dump(flow_i, flow_dump)
             warped_path_i = estVol_root + str(i).zfill(6) + '.spi'
-            save_volume(warped_i, warped_path_i)
+            args = " %s %s %s" % (ref_dump, flow_dump, warped_path_i)
+            script_path = continuousflex.__path__[0] + '/protocols/utilities/optflow_warp.py'
+            command = "python " + script_path + args
+            command = Plugin.getContinuousFlexCmd(command)
+            check_call(command, shell=True, stdout=sys.stdout, stderr=sys.stderr,
+                       env=None, cwd=None)
 
         # Find a matrix of metrics (normalized cross correlation, mean square distance, mean absolute distance)
         stat_mat = np.zeros([N, 3])

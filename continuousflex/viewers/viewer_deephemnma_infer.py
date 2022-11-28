@@ -1,7 +1,6 @@
 # **************************************************************************
 # *
-# * Authors:     J.M. De la Rosa Trevin (jmdelarosa@cnb.csic.es)
-# *              Slavica Jonic  (slavica.jonic@upmc.fr)
+# * Authors:     Ilyes Hamitouche (ilyes.hamitouche@upmc.fr)
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by

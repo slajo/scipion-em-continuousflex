@@ -38,7 +38,7 @@ class TestStA(TestWorkflow):
     def setUpClass(cls):
         # Create a new project
         setupTestProject(cls)
-        cls.ds = DataSet.getDataSet('nma')
+        cls.ds = DataSet.getDataSet('nma_V2.0')
 
     def test_StA(self):
         """ Run NMA then synthesize sybtomograms"""

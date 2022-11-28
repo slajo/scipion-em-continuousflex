@@ -1,8 +1,8 @@
 from torchvision import transforms
 from torch.utils.data import DataLoader
-from continuousflex.protocols.utilities.processing_dh.data import cryodata
-from continuousflex.protocols.utilities.processing_dh.utils import quater2euler, reverse_min_max
-from continuousflex.protocols.utilities.processing_dh.models import deephemnma
+from processing_dh.data import cryodata
+from processing_dh.utils import quater2euler, reverse_min_max
+from processing_dh.models import deephemnma
 import numpy as np
 import torch
 from pathlib import Path
