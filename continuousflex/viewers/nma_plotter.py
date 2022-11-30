@@ -248,10 +248,10 @@ def plotArray2D(ax, data, vvmin=None, vvmax=None, s = None, alpha = None, cbar_l
     npoints = len(xdata)
     maxpoints = 100000
     if npoints > maxpoints :
-        indexes = np.random.choice(np.arange(npoints), maxpoints, replace=False)
-        xdata = np.array(xdata)[indexes]
-        ydata = np.array(ydata)[indexes]
-        weights = np.array(weights)[indexes]
+        scale = npoints//maxpoints
+        xdata = np.array(xdata)[::scale]
+        ydata = np.array(ydata)[::scale]
+        weights = np.array(weights)[::scale]
         
     if vvmin:
         cax = ax.scatter(xdata, ydata, c=weights, vmin=vvmin.get(), vmax=vvmax.get(), s=s, alpha=alpha)
@@ -270,10 +270,10 @@ def plotArray2D_xy(ax, data, vvmin=None, vvmax=None, s = None, alpha = None):
     npoints = len(xdata)
     maxpoints = 100000
     if npoints > maxpoints :
-        indexes = np.random.choice(np.arange(npoints), maxpoints, replace=False)
-        xdata = np.array(xdata)[indexes]
-        ydata = np.array(ydata)[indexes]
-        weights = np.array(weights)[indexes]
+        scale = npoints//maxpoints
+        xdata = np.array(xdata)[::scale]
+        ydata = np.array(ydata)[::scale]
+        weights = np.array(weights)[::scale]
 
     if vvmin:
         cax = ax.scatter(xdata, ydata, c=weights, vmin=vvmin.get(), vmax=vvmax.get(), s=s, alpha=alpha)

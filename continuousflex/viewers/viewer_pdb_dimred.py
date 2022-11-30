@@ -46,7 +46,7 @@ from continuousflex.protocols.utilities.pdb_handler import ContinuousFlexPDBHand
 from pyworkflow.gui.browser import FileBrowserWindow
 from continuousflex.protocols.protocol_pdb_dimred import REDUCE_METHOD_PCA, REDUCE_METHOD_UMAP
 from continuousflex.protocols.protocol_batch_pdb_cluster import FlexBatchProtClusterSet
-
+from .plotter import FlexPlotter
 
 
 import os
@@ -88,11 +88,21 @@ class FlexProtPdbDimredViewer(ProtocolViewer):
         group = form.addGroup("Display PCA")
         group.addParam('displayPCA', LabelParam,
                       label='Display PCA axes',
-                      help='Open a GUI to visualize the PCA space'
-                           ' to draw and adjust trajectories.')
+                      help='Open a GUI to visualize the PCA space')
 
         group.addParam('pcaAxes', StringParam, default="1 2",
                        label='Axes to display' )
+
+        group = form.addGroup("Display free energy")
+        group.addParam('displayFreeEnergy', LabelParam,
+                      label='Display free energy',
+                      help='Open a GUI to visualize the PCA space as free energy landscape')
+        group.addParam('freeEnergyAxes', StringParam, default="1 2",
+                       label='Axes to display' )
+        group.addParam('freeEnergySize', IntParam, default=100,
+                       label='Sampling size' )
+        group.addParam('freeEnergyInterpolation', StringParam, default="bilinear",
+                       label='Interpolation method' )
 
         group = form.addGroup("Animation tool")
 
@@ -153,6 +163,7 @@ class FlexProtPdbDimredViewer(ProtocolViewer):
     def _getVisualizeDict(self):
         return {
                 'displayPCA': self._displayPCA,
+                'displayFreeEnergy': self._displayFreeEnergy,
                 'displayAnimationtool': self._displayAnimationtool,
                 'displayPcaSingularValues': self.viewPcaSinglularValues,
                 }
@@ -182,6 +193,43 @@ class FlexProtPdbDimredViewer(ProtocolViewer):
             data.ZIND = axes[2]-1
             plotter.plotArray3D_xyz("PCA","%i component"%(axes[0]),"%i component"%(axes[1]),"%i component"%(axes[2]))
         plotter.show()
+
+    def _displayFreeEnergy(self, paramName):
+        axes_str = str.split(self.freeEnergyAxes.get())
+        axes = []
+        for i in axes_str : axes.append(int(i.strip())-1)
+
+        dim = len(axes)
+        if dim != 2:
+            return self.errorMessage("Please select only 2 axes", "Invalid Input")
+
+        data = np.array([p.getData()[axes] for p in self.getData()])
+        size =self.freeEnergySize.get()
+        interp =self.freeEnergyInterpolation.get()
+        xmin = np.min(data[:,0])
+        xmax = np.max(data[:,0])
+        ymin = np.min(data[:,1])
+        ymax = np.max(data[:,1])
+        x = np.linspace(xmin, xmax, size)
+        y = np.linspace(ymin, ymax, size)
+        count = np.zeros((size, size))
+        for i in range(data.shape[0]):
+            count[np.argmin(np.abs(x.T - data[i, 0])),
+                  np.argmin(np.abs(y.T - data[i, 1]))] += 1
+        img = -np.log(count / count.max())
+        img[img == np.inf] = img[img != np.inf].max()
+
+        plotter = FlexPlotter()
+        ax = plotter.createSubPlot("Free energy", "component "+axes_str[0],
+                                        "component " + axes_str[1])
+        im = ax.imshow(img.T[::-1,:],
+                   cmap = "jet", interpolation=interp,
+                   extent=[xmin,xmax,ymin,ymax])
+        cbar = plotter.figure.colorbar(im)
+        cbar.set_label("$\Delta G / k_{B}T$")
+        plotter.show()
+
+
 
     def _displayAnimationtool(self, paramName):
         self.trajectoriesWindow = self.tkWindow(PCAWindowDimred,
