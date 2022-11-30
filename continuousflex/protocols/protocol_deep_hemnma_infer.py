@@ -24,8 +24,7 @@
 # **************************************************************************
 
 import xmipp3.convert
-from pyworkflow.protocol.params import (PointerParam, StringParam, EnumParam,
-                                        IntParam, LEVEL_ADVANCED)
+from pyworkflow.protocol.params import PointerParam
 import pyworkflow.protocol.params as params
 from pwem.protocols import ProtAnalysis3D
 from subprocess import check_call
@@ -146,7 +145,7 @@ class FlexProtDeepHEMNMAInfer(ProtAnalysis3D):
         return errors
     
     def _citations(self):
-        return []
+        return ['harastani2022continuousflex','hamitouche2022deephemnma']
     
     def _methods(self):
         return []

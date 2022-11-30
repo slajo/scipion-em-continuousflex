@@ -1,5 +1,5 @@
 # **************************************************************************
-# * Authors:    Mohamad Harastani            (mohamad.harastani@upmc.fr)
+# * Authors:    Mohamad Harastani            (mohamad.harastani@igbmc.fr)
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ IMPORT_FLOWS = 0
 FIND_FLOWS = 1
 
 class FlexProtHeteroFlow(ProtAnalysis3D):
-    """ Protocol for HeteroFlow. """
+    """ Protocol for TomoFlow. """
     _label = 'tomoflow protocol'
 
     # --------------------------- DEFINE param functions --------------------------------------------
@@ -342,17 +342,6 @@ class FlexProtHeteroFlow(ProtAnalysis3D):
             pass
         pass
 
-    # --------------------------- INFO functions --------------------------------------------
-    def _summary(self):
-        summary = []
-        return summary
-
-    def _citations(self):
-        return []
-
-    def _methods(self):
-        pass
-
     # --------------------------- UTILS functions --------------------------------------------
     def read_optical_flow(self, path_flowx, path_flowy, path_flowz):
         x = ImageHandler().read(path_flowx).getData()
@@ -438,3 +427,14 @@ class FlexProtHeteroFlow(ProtAnalysis3D):
 
     def getVolumeDimesion(self):
         return self.inputVolumes.get().getDimensions()[0]
+
+    # --------------------------- INFO functions --------------------------------------------
+    def _summary(self):
+        summary = []
+        return summary
+
+    def _citations(self):
+        return ['harastani2022tomoflow','harastani2022continuousflex']
+
+    def _methods(self):
+        pass

@@ -23,7 +23,6 @@
 # *
 # **************************************************************************
 
-
 from pyworkflow.protocol.params import PointerParam
 import pyworkflow.protocol.params as params
 from pwem.protocols import ProtAnalysis3D
@@ -115,7 +114,7 @@ class FlexProtDeepHEMNMATrain(ProtAnalysis3D):
         return errors
     
     def _citations(self):
-        return []
+        return ['harastani2022continuousflex','hamitouche2022deephemnma']
     
     def _methods(self):
         return []

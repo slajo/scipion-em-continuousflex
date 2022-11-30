@@ -43,7 +43,7 @@ MODEL_CONTINUOUSFLEX_ENV_ACTIVATION_VAR = "MODEL_CONTINUOUSFLEX_ENV_ACTIVATION"
 MODEL_CONTINUOUSFLEX_ACTIVATION_VAR = "MODEL_CONTINUOUSFLEX_ACTIVATION"
 CF_VERSION = 'git'
 
-__version__ = "3.2.0"
+__version__ = "3.3.0"
 
 class Plugin(pwem.Plugin):
     _homeVar = CONTINUOUSFLEX_HOME
@@ -136,7 +136,6 @@ class Plugin(pwem.Plugin):
         cmd_1 = cls.getCondaActivationCmd() + ' ' + cls.getActivationCmd(CF_VERSION)
         cmd = cmd_1  + ' && cd ElNemo; make; mv nma_* ..'
 
-        # TODO: we may need to clean the LD_LIBRARY_PATH before compilation, and improve the folllwing installation
         lib_path = os.environ['CONDA_PYTHON_EXE'][:-10] + 'envs/continuousflex-' + CF_VERSION + '/lib'
         # linking blas, arpack and lapack libraries to scipion lin
         os.system('ln -f -s ' + lib_path + '/libopenblas* ' + env.getLibFolder())
