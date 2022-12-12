@@ -127,11 +127,13 @@ class FlexProtAlignPdb(ProtAnalysis3D):
         # Get pdbs coordinates
         if self.pdbSource.get() == PDB_SOURCE_TRAJECT:
             pdbs_arr = dcd2numpyArr(inputFiles[0])
-            nframe, natom, _ = pdbs_arr.shape
-            pdbs_arr = pdbs_arr
+            start = self.dcd_start.get()
+            step = self.dcd_step.get()
+            end = self.dcd_end.get() if self.dcd_end.get() != -1 else pdbs_arr.shape[0]
+            pdbs_arr = pdbs_arr[start:end:step]
             for i in range(1,len(inputFiles)):
                 pdb_arr_i = dcd2numpyArr(inputFiles[i])
-                pdbs_arr = np.concatenate((pdbs_arr, pdb_arr_i), axis=0)
+                pdbs_arr = np.concatenate((pdbs_arr, pdb_arr_i[start:end:step]), axis=0)
 
         else:
             pdbs_matrix = []

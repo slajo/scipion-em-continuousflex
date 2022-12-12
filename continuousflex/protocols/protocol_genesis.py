@@ -38,6 +38,9 @@ from pyworkflow.utils import runCommand, buildRunCommand
 from xmipp3.convert import writeSetOfParticles, writeSetOfVolumes
 from pwem.convert.atom_struct import cifToPdb
 
+import pwem.emlib.metadata as md
+import re
+
 class ProtGenesis(EMProtocol):
     """ Protocol to perform MD/NMMD simulation based on GENESIS. """
     _label = 'MD-NMMD-Genesis'
@@ -265,6 +268,9 @@ class ProtGenesis(EMProtocol):
                         " fit_tolerance=0.001 is specified, the Gaussian function is truncated to zero when it is less"
                         " than 0.1% of the maximum value. Smaller value requires large computational cost",
                       condition="EMfitChoice!=0",expertLevel=params.LEVEL_ADVANCED)
+        group.addParam('emfit_period', params.IntParam, default=10, label='EM Fit period',
+                       help="Number of MD iteration every which the EM poential is updated",
+                       condition="EMfitChoice!=0", expertLevel=params.LEVEL_ADVANCED)
 
         # Volumes
         group = form.addGroup('Volume Parameters', condition="EMfitChoice==1")
@@ -502,6 +508,7 @@ class ProtGenesis(EMProtocol):
             "nreplica": self.nreplica.get(),
             "emfit_sigma": self.emfit_sigma.get(),
             "emfit_tolerance": self.emfit_tolerance.get(),
+            "emfit_period": self.emfit_period.get(),
             "pixel_size": self.pixel_size.get(),
             "exchange_period": self.exchange_period.get()
         }
@@ -947,7 +954,7 @@ def createGenesisInput(inp_file, outputPrefix="", inputPDBprefix="", inputEMpref
                        fast_water = False, water_model="TIP3", box_size_x=None, box_size_y=None, box_size_z=None,
                        boundary=BOUNDARY_NOBC, ensemble=ENSEMBLE_NVE, tpcontrol=TPCONTROL_NONE, temperature=300.0,
                        pressure=1.0, EMfitChoice=EMFIT_NONE, constantK=1000.0, nreplica=4, emfit_sigma=2.0,
-                       emfit_tolerance=0.01, pixel_size=1.0, exchange_period=100):
+                       emfit_tolerance=0.01, emfit_period=10, pixel_size=1.0, exchange_period=100):
     s = "\n[INPUT] \n"  # -----------------------------------------------------------
     s += "pdbfile = %s.pdb\n" % inputPDBprefix
     if forcefield == FORCEFIELD_CHARMM:
@@ -1089,7 +1096,7 @@ def createGenesisInput(inp_file, outputPrefix="", inputPDBprefix="", inputEMpref
         s += "emfit = YES  \n"
         s += "emfit_sigma = %.4f \n" % emfit_sigma
         s += "emfit_tolerance = %.6f \n" % emfit_tolerance
-        s += "emfit_period = 1  \n"
+        s += "emfit_period = %i  \n" % emfit_period
         if EMfitChoice == EMFIT_VOLUMES:
             s += "emfit_target = %s.mrc \n" % inputEMprefix
         elif EMfitChoice == EMFIT_IMAGES:
