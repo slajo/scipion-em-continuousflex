@@ -24,8 +24,8 @@
 # *
 # **************************************************************************
 
-from math import sqrt
 from continuousflex.viewers.nma_plotter import plotArray2D_xy
+import numpy as np
 
 STATE_NO_POINTS = 0  # no points have been selected, double-click will add first one
 STATE_DRAW_POINTS = 1  # still adding points, double-click will set the last one
@@ -120,13 +120,8 @@ class PointPath():
                     self.setState(STATE_ADJUST_POINTS, notify=True)
 
         if self.drawing == STATE_ADJUST_POINTS and not doubleClick:  # Points moving state
-            self.dragIndex = None
-            for i, point in enumerate(self.pathData):
-                x = point.getX()
-                y = point.getY()
-                if sqrt((ex - x) ** 2 + (ey - y) ** 2) < self.tolerance:
-                    self.dragIndex = i
-                    break
+            trajectory = np.array([[p.getX(),p.getY()] for p in self.pathData])
+            self.dragIndex = np.argmin(np.linalg.norm(trajectory - np.array([ex,ey]), axis=1))
 
     def getXYData(self):
         xs = self.pathData.getXData()

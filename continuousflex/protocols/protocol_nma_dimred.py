@@ -3,7 +3,7 @@
 # * Authors:
 # * J.M. De la Rosa Trevin (jmdelarosa@cnb.csic.es), Nov 2014
 # * Slavica Jonic (slavica.jonic@upmc.fr)
-# * Mohamad Harastani (mohamad.harastani@upmc.fr)
+# * Mohamad Harastani (mohamad.harastani@igbmc.fr)
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -258,14 +258,14 @@ class FlexProtDimredNMA(ProtAnalysis3D):
         return errors
 
     def _citations(self):
-        return []
+        return ['harastani2022continuousflex','Jin2014']
 
     def _methods(self):
         return []
 
     # --------------------------- UTILS functions --------------------------------------------
     def getInputModes(self):
-        if isinstance(self.inputNMA, FlexProtAlignmentNMA):
+        if isinstance(self.inputNMA.get(), FlexProtAlignmentNMA):
             return self.inputNMA.get()._getExtraPath('modes.xmd')
         else:
             return self.inputNMA.get().trained_model.get().inputNMA.get()._getExtraPath('modes.xmd')
@@ -279,7 +279,7 @@ class FlexProtDimredNMA(ProtAnalysis3D):
         return self.inputNMA.get()._getExtraPath('images.xmd')
 
     def getInputPdb(self):
-        if isinstance(self.inputNMA, FlexProtAlignmentNMA):
+        if isinstance(self.inputNMA.get(), FlexProtAlignmentNMA):
             return self.inputNMA.get().getInputPdb()
         else:
             return self.inputNMA.get().trained_model.get().inputNMA.get().getInputPdb()

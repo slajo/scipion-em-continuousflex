@@ -24,15 +24,11 @@
 from pwem.protocols import ProtImportPdb, ProtImportVolumes#, ProtImportParticles, ProtImportVolumes
 from pwem.tests.workflows import TestWorkflow
 from pyworkflow.tests import setupTestProject, DataSet
-
-from continuousflex.protocols.protocol_genesis import *
+from continuousflex.protocols.protocol_generate_topology import ProtGenerateTopology
 from continuousflex.protocols import FlexProtNMA, NMA_CUTOFF_ABS, FlexProtSynthesizeImages
 from continuousflex.viewers.viewer_genesis import *
 from continuousflex.protocols.utilities.pdb_handler import ContinuousFlexPDBHandler
-import os
-import multiprocessing
 
-NUMBER_OF_CPU = int(np.min([multiprocessing.cpu_count(),4]))
 
 class testGENESIS(TestWorkflow):
     """ Test Class for GENESIS. """
@@ -57,15 +53,20 @@ class testGENESIS(TestWorkflow):
         protPdb4ake.setObjLabel('Input PDB (4AKE All-Atom)')
         self.launchProtocol(protPdb4ake)
 
+        # Energy min
+        protGenTopo = self.newProtocol(ProtGenerateTopology,
+            inputPDB = protPdb4ake.outputPdb,
+            forcefield = FORCEFIELD_CHARMM,
+            inputPRM = self.ds.getFile('charmm_prm'),
+            inputRTF = self.ds.getFile('charmm_top'),
+            inputPSF=self.ds.getFile('4ake_aa_psf'))
+        self.launchProtocol(protGenTopo)
+
 
         # Energy min
         protGenesisMin = self.newProtocol(ProtGenesis,
-            inputPDB = protPdb4ake.outputPdb,
-            forcefield = FORCEFIELD_CHARMM,
-            generateTop = False,
-            inputPRM = self.ds.getFile('charmm_prm'),
-            inputRTF = self.ds.getFile('charmm_top'),
-            inputPSF=self.ds.getFile('4ake_aa_psf'),
+            inputType = INPUT_TOPOLOGY,
+            topoProt = protGenTopo,
 
             simulationType = SIMULATION_MIN,
             time_step = 0.002,
@@ -81,6 +82,7 @@ class testGENESIS(TestWorkflow):
             pairlist_dist = 15.0,
 
             numberOfThreads = NUMBER_OF_CPU,
+            numberOfMpi = 1,
 
        )
 
@@ -113,7 +115,7 @@ class testGENESIS(TestWorkflow):
         self.launchProtocol(protNMA)
 
         protGenesisFitNMMD = self.newProtocol(ProtGenesis,
-          restartChoice=True,
+          inputType=INPUT_RESTART,
           restartProt = protGenesisMin,
 
           simulationType=SIMULATION_NMMD,
@@ -146,6 +148,7 @@ class testGENESIS(TestWorkflow):
           centerOrigin=True,
 
           numberOfThreads=NUMBER_OF_CPU,
+          numberOfMpi=1,
           )
         protGenesisFitNMMD.setObjLabel('NMMD Flexible Fitting CHARMM')
 
@@ -190,7 +193,7 @@ class testGENESIS(TestWorkflow):
         protGenesisMin = self.newProtocol(ProtGenesis,
             inputPDB = protPdb4ake.outputPdb,
             forcefield = FORCEFIELD_CAGO,
-            generateTop = False,
+            inputType = INPUT_NEW_SIM,
             inputTOP = self.ds.getFile('4ake_ca_top'),
 
             simulationType = SIMULATION_MIN,
@@ -206,8 +209,8 @@ class testGENESIS(TestWorkflow):
             cutoff_dist = 12.0,
             pairlist_dist = 15.0,
 
-            numberOfThreads = NUMBER_OF_CPU,
-
+          numberOfThreads=NUMBER_OF_CPU,
+          numberOfMpi=1,
        )
         protGenesisMin.setObjLabel('Energy Minimization CAGO')
         # Launch minimisation
@@ -222,8 +225,8 @@ class testGENESIS(TestWorkflow):
 
         protGenesisFitMD = self.newProtocol(ProtGenesis,
 
-                                              restartChoice=True,
-                                              restartProt=protGenesisMin,
+                                            inputType=INPUT_RESTART,
+                                            restartProt=protGenesisMin,
 
                                               simulationType=SIMULATION_MD,
                                               time_step=0.0005,
@@ -289,7 +292,7 @@ class testGENESIS(TestWorkflow):
         if NUMBER_OF_CPU >= 4:
             protGenesisFitREUS = self.newProtocol(ProtGenesis,
 
-                                                  restartChoice=True,
+                                                  inputType=INPUT_RESTART,
                                                   restartProt=protGenesisMin,
 
                                                   simulationType=SIMULATION_RENMMD,
@@ -323,8 +326,8 @@ class testGENESIS(TestWorkflow):
                                               voxel_size=2.0,
                                               centerOrigin=True,
 
-                                              numberOfThreads=1,
-                                              numberOfMpi=4,
+                                                  numberOfThreads=1,
+                                                  numberOfMpi=NUMBER_OF_CPU,
                                               )
             protGenesisFitREUS.setObjLabel('NMMD + REUS Flexible Fitting CAGO')
 
@@ -365,6 +368,72 @@ class testGENESIS(TestWorkflow):
             # assert (rmsd1[-1] < 3.0)
             assert (rmsd_inp > rmsd_out2)
             # assert (rmsd2[-1] < 3.0)
+
+##################################################################################################
+#
+#                                  EMFIT IMAGES
+#
+##################################################################################################
+
+            protPdb1ake = self.newProtocol(ProtImportPdb, inputPdbData=1,
+                                           pdbFile=self.ds.getFile('1ake_pdb'))
+            protPdb1ake.setObjLabel('Target PDB (1AKE)')
+            self.launchProtocol(protPdb1ake)
+            protNMA_1ake = self.newProtocol(FlexProtNMA,
+                                       cutoffMode=NMA_CUTOFF_ABS)
+            protNMA_1ake.inputStructure.set(protPdb1ake.outputPdb)
+            protNMA_1ake.setObjLabel('NMA 1ake')
+            self.launchProtocol(protNMA_1ake)
+
+            target_images= self.newProtocol(FlexProtSynthesizeImages,
+                             inputModes=protNMA_1ake.outputModes,
+                             numberOfVolumes=10,
+                             samplingRate=2.0,
+                             volumeSize=64)
+            target_images.setObjLabel('Target particles (1ake)')
+            self.launchProtocol(target_images)
+
+            protGenesisFitNMMDImg = self.newProtocol(ProtGenesis,
+
+                                                 inputType=INPUT_RESTART,
+                                                 restartProt=protGenesisMin,
+
+                                                  simulationType=SIMULATION_NMMD,
+                                                  time_step=0.0005,
+                                                  n_steps=1000,
+                                                  eneout_period=100,
+                                                  crdout_period=100,
+                                                  nbupdate_period=10,
+                                                  nm_number=6,
+                                                  nm_mass=1.0,
+                                                  inputModes=protNMA.outputModes,
+
+                                                  implicitSolvent=IMPLICIT_SOLVENT_NONE,
+                                                  electrostatics=ELECTROSTATICS_CUTOFF,
+                                                  switch_dist=10.0,
+                                                  cutoff_dist=12.0,
+                                                  pairlist_dist=15.0,
+
+                                                  ensemble=ENSEMBLE_NVT,
+                                                  tpcontrol=TPCONTROL_LANGEVIN,
+                                                  temperature=50.0,
+
+                                                  boundary=BOUNDARY_NOBC,
+                                                  EMfitChoice=EMFIT_IMAGES,
+                                                  constantK="500",
+                                                  emfit_sigma=2.0,
+                                                  emfit_tolerance=0.1,
+                                                  inputImage=target_images.outputImages,
+                                                  pixel_size=2.0,
+                                                  imageAngleShift=target_images._getExtraPath("GroundTruth.xmd"),
+
+                                                  numberOfThreads=1,
+                                                  numberOfMpi=NUMBER_OF_CPU,
+                                                  )
+            protGenesisFitNMMDImg.setObjLabel('NMMD Flexible Fitting Images')
+
+            # Launch Fitting
+            self.launchProtocol(protGenesisFitNMMDImg)
 
     # def test3_MDCHARMM(self):
     #     # Import PDB

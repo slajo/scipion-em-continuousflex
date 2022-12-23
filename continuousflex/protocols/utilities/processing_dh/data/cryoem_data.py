@@ -2,7 +2,7 @@ import glob
 
 import numpy as np
 from torch.utils.data import Dataset
-from continuousflex.protocols.utilities.processing_dh.utils import spi2array, eul2quat, min_max
+from ..utils import spi2array, eul2quat, min_max
 import torch
 import pwem.emlib.metadata as md
 class cryodata(Dataset):
@@ -95,11 +95,8 @@ class cryodata(Dataset):
                 if self.transform:
                     spi_array = self.transform(spi_array)
                     amplitudes = torch.tensor(amplitudes)
-                    print(amplitudes.shape)
                     angles = torch.tensor(angles)
-                    print(angles.shape)
                     shifts = torch.tensor(shifts)
-                    print(shifts.shape)
                     params = torch.cat([amplitudes, angles, shifts])
                 return spi_array, params
         elif self.mode == 'inference':

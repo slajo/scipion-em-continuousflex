@@ -26,17 +26,16 @@
 
 from os.path import basename
 import tkinter as tk
-
 import pyworkflow.gui as gui
 from pyworkflow.utils.properties import Icon
 from pyworkflow.gui.widgets import Button, HotButton
-
 from continuousflex.protocols.data import Point, PathData
 from . import PointPath
 from continuousflex.viewers.nma_plotter import FlexNmaPlotter
 
 FIGURE_LIMIT_NONE = 0
 FIGURE_LIMITS = 1
+
 
 class TrajectoriesWindow(gui.Window):
     """ This class creates a Window that will display some Point's
@@ -67,6 +66,7 @@ class TrajectoriesWindow(gui.Window):
         self.s = kwargs.get('s')
         self.alpha = kwargs.get('alpha')
         self.deep = kwargs.get('deepHEMNMA')
+        self.cbar_label = kwargs.get('cbar_label')
         self.plotter = None
 
         content = tk.Frame(self.root)
@@ -212,24 +212,22 @@ class TrajectoriesWindow(gui.Window):
                                           title="Invalid input")]
 
             if self.plotter is None or self.plotter.isClosed():
-                # self.plotter = FlexNmaPlotter(data=self.data)
                 # Actually plot
                 if self.limits_modes == FIGURE_LIMIT_NONE:
                     self.plotter = FlexNmaPlotter(data=self.data,
                                                 xlim_low=self.xlim_low, xlim_high=self.xlim_high,
                                                 ylim_low=self.ylim_low, ylim_high=self.ylim_high,
                                                 zlim_low=self.zlim_low, zlim_high=self.zlim_high,
-                                                alpha=self.alpha, s=self.s)
+                                                alpha=self.alpha, s=self.s, cbar_label=self.cbar_label)
                 else:
                     self.plotter = FlexNmaPlotter(data=self.data,
                                                 LimitL=self.LimitLow, LimitH=self.LimitHigh,
                                                 xlim_low=self.xlim_low, xlim_high=self.xlim_high,
                                                 ylim_low=self.ylim_low, ylim_high=self.ylim_high,
                                                 zlim_low=self.zlim_low, zlim_high=self.zlim_high,
-                                                alpha=self.alpha, s=self.s)
+                                                alpha=self.alpha, s=self.s, cbar_label=self.cbar_label)
 
                 doShow = True
-                # self.plotter.useLastPlot = True
             else:
                 self.plotter.clear()
                 doShow = False
@@ -248,8 +246,7 @@ class TrajectoriesWindow(gui.Window):
                 if dim == 2:
                     self._evalExpression()
                     self._updateSelectionLabel()
-                    # ax = self.plotter.createSubPlot("Click and drag to add points to the Cluster",
-                    #                                 *baseList)
+
                     if self.deep:
                         ax = self.plotter.plotArray2D_xy("Click and drag to add points to the Cluster",
                                                       *baseList)
@@ -258,11 +255,10 @@ class TrajectoriesWindow(gui.Window):
                                                     *baseList)
 
                     self.ps = PointPath(ax, self.data, self.pathData,
-                                        callback=self._checkNumberOfPoints,
+                                        callback=self._checkNumberOfPoints, maxPoints=self.numberOfPoints,
                                         LimitL = self.LimitLow, LimitH = self.LimitHigh,
                                         alpha=self.alpha.get(), s = self.s.get())
                 elif dim == 3:
-                    # del self.ps # Remove PointSelector
                     self.setDataIndex('ZIND', modeList[2])
                     if self.deep:
                         self.plotter.plotArray3D_xyz("%s %s %s" % tuple(baseList), *baseList)

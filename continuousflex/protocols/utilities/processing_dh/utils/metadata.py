@@ -51,7 +51,6 @@ def create_array(path, flag='nma'):
         file_list[i] = file_list[i].replace('\n', ' ')
         file_list[i] = list(filter(None, re.split("\s|'",file_list[i])))
     
-    print("Number of Normal Modes detected is: ",num_modes)
     data_array=np.reshape(file_list,(len(file_list),columns))
     img_names=data_array[:,img_index]
     nm_amplitudes = data_array[:, nma_index: nma_index+num_modes].astype('float32') 
@@ -63,6 +62,7 @@ def create_array(path, flag='nma'):
     for i in range(len(angles)):
         quaternions[i,:] = eul2quat(angles, i)
     if flag=='nma':
+        print("Number of Normal Modes detected is: ",num_modes)
         return nm_amplitudes, nma_min, nma_max, img_names
     elif flag=='ang':
         return quaternions, img_names

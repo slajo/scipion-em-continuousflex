@@ -1,5 +1,5 @@
 # **************************************************************************
-# * Authors:  Mohamad Harastani          (mohamad.harastani@upmc.fr)
+# * Authors:  Mohamad Harastani          (mohamad.harastani@igbmc.fr)
 # * IMPMC, UPMC Sorbonne University
 # *
 # * This program is free software; you can redistribute it and/or modify
@@ -21,20 +21,10 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # **************************************************************************
 
-
-from os.path import basename
 import numpy as np
-from pwem.emlib import MetaData, MDL_ORDER
 from pyworkflow.protocol.params import StringParam, LabelParam, EnumParam, FloatParam, IntParam, LEVEL_ADVANCED
 from pyworkflow.viewer import (ProtocolViewer, DESKTOP_TKINTER, WEB_DJANGO)
-from pyworkflow.utils import replaceBaseExt, replaceExt
-
-from continuousflex.protocols.data import Point, Data
-from continuousflex.viewers.nma_plotter import FlexNmaPlotter
 from continuousflex.protocols import FlexProtSubtomoClassify
-import xmipp3
-import pwem.emlib.metadata as md
-from pwem.viewers import ObjectView
 import matplotlib.pyplot as plt
 from joblib import load
 import scipy.cluster.hierarchy as sch
@@ -60,69 +50,71 @@ class FlexProtSubtomoClassifyViewer(ProtocolViewer):
 
     def _defineParams(self, form):
         form.addSection(label='Visualization')
-        form.addParam('displayAgglomarative', LabelParam,
-                      label="Display Hierarchical Clustering Tree",
-                      help="Display the dendrogram that corresponds to the Hierarchical clustering")
-        form.addParam('displayFullAgglomarative', LabelParam,
-                      expertLevel=LEVEL_ADVANCED,
-                      label="Display Full Hierarchical Clustering Tree",
-                      help="Display the full tree without truncating for the first p clusters")
-        form.addParam('displayRawDeformation', StringParam, default='1 2',
-                      label='Display the principle axes',
-                      help='Type 1 to see the histogram of PCA axis 1; \n'
-                           'type 2 to to see the histogram of PCA axis 2, etc.\n'
-                           'Type 1 2 to see the 2D plot of amplitudes for PCA axes 1 2.\n'
-                           'Type 1 2 3 to see the 3D plot of amplitudes for PCA axes 1 2 3; etc.'
-                           )
-        form.addParam('displayPcaSingularValues', LabelParam,
-                      label="Display PCA singular values",
-                      help="The values should help you see how many dimensions are in the data ")
-        form.addParam('displayKmeans', StringParam, default='1 2',
-                      label='Display Kmeans classification on the principle axes',
-                      help='Type 1 2 to see the classification 2D plot on the PCA axes 1 2.\n'
-                           'Type 1 2 3 to see the classification 3D plot on the PCA axes 1 2 3; etc.'
-                           )
-        form.addParam('blacked', IntParam,
-                      default=None,
-                      allowsNull=True,
-                      expertLevel=LEVEL_ADVANCED,
-                      label='blacked cluster',
-                      help='This allows you to make a specific cluster color to black to identify it.'
-                           'If 0 this will make cluster 0 black on the graph'
-                           'If 1 this will make cluster 1 black on the graph, etc.')
-        form.addParam('xlimits_mode', EnumParam,
-                      choices=['Automatic (Recommended)', 'Set manually x-axis limits'],
-                      default=X_LIMITS_NONE,
-                      label='x-axis limits', display=EnumParam.DISPLAY_COMBO,
-                      help='This allows you to use a specific range of x-axis limits')
-        form.addParam('xlim_low', FloatParam, default=None,
-                      condition='xlimits_mode==%d' % X_LIMITS,
-                      label='Lower x-axis limit')
-        form.addParam('xlim_high', FloatParam, default=None,
-                      condition='xlimits_mode==%d' % X_LIMITS,
-                      label='Upper x-axis limit')
-        form.addParam('ylimits_mode', EnumParam,
-                      choices=['Automatic (Recommended)', 'Set manually y-axis limits'],
-                      default=Y_LIMITS_NONE,
-                      label='y-axis limits', display=EnumParam.DISPLAY_COMBO,
-                      help='This allows you to use a specific range of y-axis limits')
-        form.addParam('ylim_low', FloatParam, default=None,
-                      condition='ylimits_mode==%d' % Y_LIMITS,
-                      label='Lower y-axis limit')
-        form.addParam('ylim_high', FloatParam, default=None,
-                      condition='ylimits_mode==%d' % Y_LIMITS,
-                      label='Upper y-axis limit')
-        form.addParam('zlimits_mode', EnumParam,
-                      choices=['Automatic (Recommended)', 'Set manually z-axis limits'],
-                      default=Z_LIMITS_NONE,
-                      label='z-axis limits', display=EnumParam.DISPLAY_COMBO,
-                      help='This allows you to use a specific range of z-axis limits')
-        form.addParam('zlim_low', FloatParam, default=None,
-                      condition='zlimits_mode==%d' % Z_LIMITS,
-                      label='Lower z-axis limit')
-        form.addParam('zlim_high', FloatParam, default=None,
-                      condition='zlimits_mode==%d' % Z_LIMITS,
-                      label='Upper z-axis limit')
+        if(self.protocol.classifyTechnique.get()==0):
+            form.addParam('displayAgglomarative', LabelParam,
+                          label="Display Hierarchical Clustering Tree",
+                          help="Display the dendrogram that corresponds to the Hierarchical clustering")
+            form.addParam('displayFullAgglomarative', LabelParam,
+                          expertLevel=LEVEL_ADVANCED,
+                          label="Display Full Hierarchical Clustering Tree",
+                          help="Display the full tree without truncating for the first p clusters")
+        if (self.protocol.classifyTechnique.get() == 1):
+            form.addParam('displayRawDeformation', StringParam, default='1 2',
+                          label='Display the principle axes',
+                          help='Type 1 to see the histogram of PCA axis 1; \n'
+                               'type 2 to to see the histogram of PCA axis 2, etc.\n'
+                               'Type 1 2 to see the 2D plot of amplitudes for PCA axes 1 2.\n'
+                               'Type 1 2 3 to see the 3D plot of amplitudes for PCA axes 1 2 3; etc.'
+                               )
+            form.addParam('displayPcaSingularValues', LabelParam,
+                          label="Display PCA singular values",
+                          help="The values should help you see how many dimensions are in the data ")
+            form.addParam('displayKmeans', StringParam, default='1 2',
+                          label='Display Kmeans classification on the principle axes',
+                          help='Type 1 2 to see the classification 2D plot on the PCA axes 1 2.\n'
+                               'Type 1 2 3 to see the classification 3D plot on the PCA axes 1 2 3; etc.'
+                               )
+            form.addParam('blacked', IntParam,
+                          default=None,
+                          allowsNull=True,
+                          expertLevel=LEVEL_ADVANCED,
+                          label='blacked cluster',
+                          help='This allows you to make a specific cluster color to black to identify it.'
+                               'If 0 this will make cluster 0 black on the graph'
+                               'If 1 this will make cluster 1 black on the graph, etc.')
+            form.addParam('xlimits_mode', EnumParam,
+                          choices=['Automatic (Recommended)', 'Set manually x-axis limits'],
+                          default=X_LIMITS_NONE,
+                          label='x-axis limits', display=EnumParam.DISPLAY_COMBO,
+                          help='This allows you to use a specific range of x-axis limits')
+            form.addParam('xlim_low', FloatParam, default=None,
+                          condition='xlimits_mode==%d' % X_LIMITS,
+                          label='Lower x-axis limit')
+            form.addParam('xlim_high', FloatParam, default=None,
+                          condition='xlimits_mode==%d' % X_LIMITS,
+                          label='Upper x-axis limit')
+            form.addParam('ylimits_mode', EnumParam,
+                          choices=['Automatic (Recommended)', 'Set manually y-axis limits'],
+                          default=Y_LIMITS_NONE,
+                          label='y-axis limits', display=EnumParam.DISPLAY_COMBO,
+                          help='This allows you to use a specific range of y-axis limits')
+            form.addParam('ylim_low', FloatParam, default=None,
+                          condition='ylimits_mode==%d' % Y_LIMITS,
+                          label='Lower y-axis limit')
+            form.addParam('ylim_high', FloatParam, default=None,
+                          condition='ylimits_mode==%d' % Y_LIMITS,
+                          label='Upper y-axis limit')
+            form.addParam('zlimits_mode', EnumParam,
+                          choices=['Automatic (Recommended)', 'Set manually z-axis limits'],
+                          default=Z_LIMITS_NONE,
+                          label='z-axis limits', display=EnumParam.DISPLAY_COMBO,
+                          help='This allows you to use a specific range of z-axis limits')
+            form.addParam('zlim_low', FloatParam, default=None,
+                          condition='zlimits_mode==%d' % Z_LIMITS,
+                          label='Lower z-axis limit')
+            form.addParam('zlim_high', FloatParam, default=None,
+                          condition='zlimits_mode==%d' % Z_LIMITS,
+                          label='Upper z-axis limit')
 
     def _getVisualizeDict(self):
         return {'displayAgglomarative': self.viewDendrogram,

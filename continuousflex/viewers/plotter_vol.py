@@ -1,6 +1,6 @@
 # **************************************************************************
 # *
-# * Authors:    Mohamad Harastani            (mohamad.harastani@upmc.fr)
+# * Authors:    Mohamad Harastani            (mohamad.harastani@igbmc.fr)
 # *             Slavica Jonic                (slavica.jonic@upmc.fr)
 # *
 # * This program is free software; you can redistribute it and/or modify
@@ -253,6 +253,11 @@ def plotArray2D(ax, data, vvmin=None, vvmax=None, s = None, alpha = None):
     cb = ax.figure.colorbar(cax)
     cb.set_label('1- Cross Correlation')
 
+def plotDataSet2D(ax, data, vvmin=None, vvmax=None, s = None, alpha = None):
+    xdata = data.getXData()
+    ydata = data.getYData()
+    weights = data.getWeights()
+    cax = ax.scatter(xdata, ydata, c=np.ones(len(weights)) - weights, s=s, alpha=alpha)
 
 def plotArray2D_xy(ax, data, vvmin=None, vvmax=None, s = None, alpha = None):
     xdata = data.getXData()

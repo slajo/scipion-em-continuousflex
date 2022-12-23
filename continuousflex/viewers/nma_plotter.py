@@ -2,7 +2,7 @@
 # *
 # * Authors:     J.M. De la Rosa Trevin (jmdelarosa@cnb.csic.es)
 # *              Slavica Jonic  (jonic@impmc.upmc.fr)
-# *              Mohamad Harastani (mohamad.harastani@upmc.fr)
+# *              Mohamad Harastani (mohamad.harastani@igbmc.fr)
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@ class FlexNmaPlotter(FlexPlotter):
         self._zlimhigh = kwargs.get('zlim_high')
         # Alpha and S are the transparancy and the size of the points, respectively
         self._alpha = kwargs.get('alpha')
+        self._cbar_label = kwargs.get('cbar_label', "Error")
         self._s = kwargs.get('s')
         FlexPlotter.__init__(self, **kwargs)
         self.useLastPlot = False
@@ -76,16 +77,16 @@ class FlexNmaPlotter(FlexPlotter):
             ax.set_xlim([self._xlimlow.get(), self._xlimhigh.get()])
         if lowy:
             ax.set_ylim([self._ylimlow.get(), self._ylimhigh.get()])
-        s = alpha = None
+        s = alpha= None
         try:
             s = self._s.get()
             alpha = self._alpha.get()
         except:
             pass
         if s and alpha:
-            plotArray2D(ax, self._data, self._limitlow, self._limitup, s, alpha)
+            plotArray2D(ax, self._data, self._limitlow, self._limitup, s, alpha, cbar_label=self._cbar_label)
         else:
-            plotArray2D(ax, self._data, self._limitlow, self._limitup)
+            plotArray2D(ax, self._data, self._limitlow, self._limitup, cbar_label=self._cbar_label)
         return ax
 
     def plotArray2D_xy(self, title, xlabel, ylabel):
@@ -238,7 +239,7 @@ class FlexNmaPlotter(FlexPlotter):
 
 #---------- Utility functions -----------------
 
-def plotArray2D(ax, data, vvmin=None, vvmax=None, s = None, alpha = None):
+def plotArray2D(ax, data, vvmin=None, vvmax=None, s = None, alpha = None, cbar_label=None):
     xdata = data.getXData()
     ydata = data.getYData()
     weights = data.getWeights()
@@ -248,7 +249,7 @@ def plotArray2D(ax, data, vvmin=None, vvmax=None, s = None, alpha = None):
         # cax = ax.scatter(xdata, ydata, weights)
         cax = ax.scatter(xdata, ydata, c=weights, s=s, alpha=alpha)
     cb = ax.figure.colorbar(cax)
-    cb.set_label('Error')
+    cb.set_label(cbar_label)
 
 def plotArray2D_xy(ax, data, vvmin=None, vvmax=None, s = None, alpha = None):
     xdata = data.getXData()

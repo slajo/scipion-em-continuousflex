@@ -23,7 +23,6 @@ def spi2array(f_name) -> object:
 """
 def spi2array(f_name) -> object:
     spi_array = ImageHandler().read(f_name).getData()
-    spi_array = normalize(spi_array)
     return spi_array
 
 
