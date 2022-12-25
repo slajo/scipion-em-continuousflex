@@ -117,15 +117,26 @@ class Plugin(pwem.Plugin):
 
         def getCondaInstallation(version):
             installationCmd = cls.getCondaActivationCmd()
-            installationCmd += 'conda create -y -n continuousflex-' + version + ' --clone scipion3 && '
-            installationCmd += cls.getActivationCmd(version) + ' && '
-            installationCmd += 'conda install -y -c conda-forge arpack lapack && '
-            installationCmd += 'pip install umap-learn && '
+            config_path = continuousflex.__path__[0]+'/conda.yaml'
+            installationCmd += 'conda env create -f {} --force -n continuousflex-'.format(config_path) + version + ' && '
+            #installationCmd += cls.getActivationCmd(version) + ' && '
+            # installationCmd += 'pip install scipion-em && '
+            # installationCmd += 'conda install -y -q -c conda-forge arpack lapack ' \
+            #                    'gcc_impl_linux-64==8.4.0 ' \
+            #                    'gcc_linux-64==8.4.0 ' \
+            #                    'gxx_impl_linux-64=8.4.0 ' \
+            #                    'gxx_linux-64=8.4.0 ' \
+            #                    'make=4.2.1 ' \
+            #                    'gfortran_impl_linux-64=7.5.0 ' \
+            #                    'openmpi=4.0.2 && '
+            # installationCmd += 'pip install umap-learn && '
+            # installationCmd += 'conda deactivate &&'
             installationCmd += 'touch env-created.txt'
             return installationCmd
 
         # Install the conda environment with lapack and arpack
         defineCondaInstallation(CF_VERSION)
+
 
 
         # Cleaning the nma binaries files and folder before expanding
@@ -134,9 +145,13 @@ class Plugin(pwem.Plugin):
 
 
         cmd_1 = cls.getCondaActivationCmd() + ' ' + cls.getActivationCmd(CF_VERSION)
-        cmd = cmd_1  + ' && cd ElNemo; make; mv nma_* ..'
+        cmd = cmd_1 + ' && cd ElNemo; make; mv nma_* ..'
+        # cmd = cmd_1 + ' && ln -s $GCC "$(dirname "${GCC}")"/gcc && '
+        # cmd += 'ln -s $GXX "$(dirname "${GXX}")"/gxx && '
+        # cmd += 'ln -s $(which x86_64-conda-linux-gnu-gfortran) "$(dirname "$(which x86_64-conda-linux-gnu-gfortran)")"/gfortran && '
 
-        lib_path = os.environ['CONDA_PYTHON_EXE'][:-10] + 'envs/continuousflex-' + CF_VERSION + '/lib'
+
+        lib_path = os.environ['CONDA_PREFIX'] + '/envs/continuousflex-' + CF_VERSION + '/lib'
         # linking blas, arpack and lapack libraries to scipion lin
         os.system('ln -f -s ' + lib_path + '/libopenblas* ' + env.getLibFolder())
         os.system('ln -f -s ' + lib_path + '/libarpack* ' + env.getLibFolder())

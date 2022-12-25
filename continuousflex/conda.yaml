@@ -1,0 +1,14 @@
+dependencies:
+  - conda-forge::arpack
+  - conda-forge::lapack
+  - conda-forge::openmpi
+  - anaconda::gcc_impl_linux-64
+  - anaconda::gcc_linux-64
+  - anaconda::gxx_impl_linux-64
+  - anaconda::gxx_linux-64
+  - anaconda::make
+  - pip
+  - python=3.8
+  - pip:
+      - umap-learn
+      - scipion-em
