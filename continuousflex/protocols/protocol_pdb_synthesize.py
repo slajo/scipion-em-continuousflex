@@ -35,6 +35,8 @@ import numpy as np
 from math import cos, sin, pi
 from pwem.objects import AtomStruct
 
+from continuousflex.protocols.utilities.pdb_handler import ContinuousFlexPDBHandler
+
 MODE_RELATION_LINEAR = 0
 MODE_RELATION_3CLUSTERS = 1
 MODE_RELATION_MESH = 2
@@ -193,21 +195,6 @@ class FlexProtSynthesizePDBs(ProtAnalysis3D):
         pdbMD.write(deformationFile)
 
     def nma_deform_pdb(self, fnPDB, fnModeList, fnOut, deformList):
-        def readPDB(fnIn):
-            with open(fnIn) as f:
-                lines = f.readlines()
-            newlines = []
-            for line in lines:
-                if line.startswith("ATOM "):
-                    try:
-                        x = float(line[30:38])
-                        y = float(line[38:46])
-                        z = float(line[46:54])
-                        newline = [x, y, z]
-                        newlines.append(newline)
-                    except:
-                        pass
-            return newlines
 
         def readModes(fnIn):
             modesMD = md.MetaData(fnIn)
@@ -218,33 +205,11 @@ class FlexProtSynthesizePDBs(ProtAnalysis3D):
                 vectors.append(vec)
             return vectors
 
-        def savePDB(list, fn, fn_original):
-            with open(fn_original) as f:
-                lines = f.readlines()
-            newLines = []
-            i = 0
-            for line in lines:
-                if line.startswith("ATOM "):
-                    try:
-                        x = list[i][0]
-                        y = list[i][1]
-                        z = list[i][2]
-                        newLine = line[0:30] + "%8.3f%8.3f%8.3f" % (x, y, z) + line[54:]
-                        i += 1
-                    except:
-                        pass
-                else:
-                    newLine = line
-                newLines.append(newLine)
-            with open(fn, mode='w') as f:
-                f.writelines(newLines)
-            pass
-
-        pdb_array = np.array(readPDB(fnPDB))
+        pdb = ContinuousFlexPDBHandler(fnPDB)
         modes = readModes(fnModeList)
         for i in range(len(deformList)):
-            pdb_array += deformList[i] * modes[7 - 1 + i]
-        savePDB(pdb_array, fnOut, fnPDB)
+            pdb.coords += deformList[i] * modes[7 - 1 + i]
+        pdb.write_pdb(fnOut)
 
     def createOutputStep(self):
         pdbset = self._createSetOfPDBs("outputPDBs")
