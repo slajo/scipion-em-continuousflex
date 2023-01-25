@@ -156,6 +156,7 @@ class FlexProtAlignPdb(ProtAnalysis3D):
 
         # open files
         inputPDB = ContinuousFlexPDBHandler(self.getPDBRef())
+        inputPDB.write_pdb(self._getExtraPath("reference.pdb"))
         refPDB = ContinuousFlexPDBHandler(self.alignRefPDB.get().getFileName())
         arrDCD = dcd2numpyArr(self._getExtraPath("coords.dcd"))
         nframe, natom,_ =arrDCD.shape

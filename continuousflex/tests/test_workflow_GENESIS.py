@@ -75,7 +75,7 @@ class TestGENESIS(TestWorkflow):
             crdout_period = 10,
             nbupdate_period = 10,
 
-            implicitSolvent = IMPLICIT_SOLVENT_GBSA,
+            implicitSolvent = IMPLICIT_SOLVENT_NONE,
             electrostatics = ELECTROSTATICS_CUTOFF,
             switch_dist = 10.0,
             cutoff_dist = 12.0,
@@ -128,7 +128,7 @@ class TestGENESIS(TestWorkflow):
           nm_mass=1.0,
           inputModes=protNMA.outputModes,
 
-          implicitSolvent=IMPLICIT_SOLVENT_GBSA,
+          implicitSolvent=IMPLICIT_SOLVENT_NONE,
           electrostatics=ELECTROSTATICS_CUTOFF,
           switch_dist=10.0,
           cutoff_dist=12.0,

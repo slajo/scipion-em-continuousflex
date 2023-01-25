@@ -137,19 +137,25 @@ class ContinuousFlexPDBHandler:
             chain_name_list1 = self.get_chain_list(chainType=0)
             chain_name_list2 = reference_pdb.get_chain_list(chainType=0)
             n_matching_chain_names = sum([i in chain_name_list2 for i in chain_name_list1])
+            print("Chains list 1  : "+str(chain_name_list1))
+            print("Chains list 1  : "+str(chain_name_list2))
+            print("Number of match : "+str(n_matching_chain_names))
 
             chain_id_list1 = self.get_chain_list(chainType=1)
             chain_id_list2 = reference_pdb.get_chain_list(chainType=1)
             n_matching_chain_ids = sum([i in chain_id_list2 for i in chain_id_list1])
+            print("Seg list 1  : "+str(chain_id_list1))
+            print("Seg list 1  : "+str(chain_id_list1))
+            print("Number of match : "+str(n_matching_chain_ids))
 
-            if n_matching_chain_ids >n_matching_chain_names:
+            if n_matching_chain_ids == 0 and n_matching_chain_names == 0 :
+                raise RuntimeError("No matching chains")
+            elif n_matching_chain_ids >=n_matching_chain_names:
                 matchingType = 1
                 print("\t Matching segments %s ... "%n_matching_chain_ids)
             elif  n_matching_chain_ids < n_matching_chain_names:
                 matchingType = 0
                 print("\t Matching chains %s ... "%n_matching_chain_names)
-            else:
-                raise RuntimeError("No matching chains")
 
 
         ids = []

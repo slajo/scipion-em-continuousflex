@@ -153,7 +153,7 @@ class ProtGenesis(EMProtocol):
                        default=None,
                        help="Input set of normal modes", condition="simulationType==2 or simulationType==4")
         group.addParam('modeList', params.NumericRangeParam, expertLevel=params.LEVEL_ADVANCED,
-                      label="Modes selection",
+                      label="Modes selection", allowsNull = True, default="",
                       help='Select the normal modes that will be used for analysis. \n'
                            'If you leave this field empty, all computed modes will be selected for simulation.\n'
                            'You have several ways to specify the modes.\n'

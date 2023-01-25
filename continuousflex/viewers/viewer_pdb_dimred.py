@@ -23,7 +23,7 @@
 # **************************************************************************
 
 import numpy as np
-from pyworkflow.protocol.params import StringParam, LabelParam, EnumParam, FloatParam, PointerParam
+from pyworkflow.protocol.params import StringParam, LabelParam, EnumParam, FloatParam, PointerParam, IntParam
 from pyworkflow.viewer import (ProtocolViewer, DESKTOP_TKINTER, WEB_DJANGO)
 from pwem.viewers import ChimeraView
 from pwem.objects.data import SetOfParticles,SetOfVolumes
