@@ -241,7 +241,7 @@ class FlexProtDimredPdb(ProtAnalysis3D):
         if self.pdbSource.get()==PDB_SOURCE_TRAJECT:
             return self.dcd_ref_pdb.get().getFileName()
         elif self.pdbSource.get()==PDB_SOURCE_ALIGNED:
-            return self.alignPdbProt.get()._getExtraPath("reference.pdb")
+            return self.alignPdbProt.get().getPDBRef()
         else:
             return self.getInputFiles()[0]
 

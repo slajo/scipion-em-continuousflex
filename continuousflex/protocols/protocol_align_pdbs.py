@@ -167,7 +167,6 @@ class FlexProtAlignPdb(ProtAnalysis3D):
             refPDB.select_atoms(idx_matching_atoms[:, 1])
         else:
             idx_matching_atoms = None
-        refPDB.write_pdb(self._getExtraPath("reference.pdb"))
 
         # loop over all pdbs
         for i in range(nframe):
@@ -202,7 +201,7 @@ class FlexProtAlignPdb(ProtAnalysis3D):
     def createOutputStep(self):
         pdbset = self._createSetOfPDBs("outputPDBs")
         arrDCD = dcd2numpyArr(self._getExtraPath("coords.dcd"))
-        refPDB = ContinuousFlexPDBHandler(self._getExtraPath("reference.pdb"))
+        refPDB = ContinuousFlexPDBHandler(self.getPDBRef())
 
         nframe, natom,_ = arrDCD.shape
         for i in range(nframe):
@@ -237,8 +236,6 @@ class FlexProtAlignPdb(ProtAnalysis3D):
             r2 = p2.getTransform()
             rot = r2.getRotationMatrix()
             tran = np.array(r2.getShifts()) / inputSet.getSamplingRate()
-            # middle = np.ones(3) * p1.getDim()[0]/2 * inputSet.getSamplingRate()
-            # new_tran = np.dot(middle, rot) + tran
             new_trans = np.zeros((4, 4))
             new_trans[:3, 3] = tran
             new_trans[:3, :3] = rot

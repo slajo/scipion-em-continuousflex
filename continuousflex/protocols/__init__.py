@@ -53,5 +53,5 @@ from .protocol_deep_hemnma_train import FlexProtDeepHEMNMATrain
 from .protocol_deep_hemnma_infer import FlexProtDeepHEMNMAInfer
 #from .protocol_histogram_matching import FlexProtHistogramMatch
 from .protocol_genesis import ProtGenesis
-from .protocol_nmmd_refine import ProtNMMDRefine
+from .protocol_mdspace import ProtMDSPACE
 from .protocol_generate_topology import ProtGenerateTopology

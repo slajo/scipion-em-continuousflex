@@ -21,6 +21,7 @@
 # *  All comments concerning this program package may be sent to the
 # *  e-mail address 'scipion@cnb.csic.es'
 # **************************************************************************
+import numpy as np
 
 from continuousflex.protocols.protocol_genesis import *
 import pyworkflow.protocol.params as params
@@ -29,7 +30,7 @@ from xmipp3.convert import writeSetOfVolumes, writeSetOfParticles, readSetOfVolu
 from pwem.constants import ALIGN_PROJ
 from continuousflex.protocols.convert import matrix2eulerAngles
 
-class ProtNMMDRefine(ProtGenesis):
+class ProtMDSPACE(ProtGenesis):
     """ Protocol to perform NMMD refinement using GENESIS """
     _label = 'NMMD refine'
 
@@ -88,16 +89,16 @@ class ProtNMMDRefine(ProtGenesis):
 
             self._insertFunctionStep("updateAlignementStep")
 
-            if self.numberOfIter.get()-1 > iter_global:
+            if iter_global == self.numberOfIter.get()-1:
+                self._insertFunctionStep("prepareOutputStep")
 
-                self._insertFunctionStep("newIterationStep")
+            self._insertFunctionStep("newIterationStep")
 
-                self._insertFunctionStep("PCAStep")
+            self._insertFunctionStep("PCAStep")
 
-                self._insertFunctionStep("runMinimizationStep")
+            self._insertFunctionStep("runMinimizationStep")
 
 
-        self._insertFunctionStep("prepareOutputStep")
 
         self._insertFunctionStep("createOutputStep")
 
@@ -215,12 +216,11 @@ class ProtNMMDRefine(ProtGenesis):
     def newIterationStep(self):
         inputPref = self.getInputPDBprefix()
         self._iter += 1
-        if self._iter < self.numberOfIter.get():
-            inputPref_incr = self.getInputPDBprefix()
-            if self.getForceField() == FORCEFIELD_CHARMM:
-                runCommand("cp %s.psf %s.psf" % (inputPref, inputPref_incr))
-            elif self.getForceField() == FORCEFIELD_CAGO or self.getForceField() == FORCEFIELD_AAGO :
-                runCommand("cp %s.top %s.top" % (inputPref, inputPref_incr))
+        inputPref_incr = self.getInputPDBprefix()
+        if self.getForceField() == FORCEFIELD_CHARMM:
+            runCommand("cp %s.psf %s.psf" % (inputPref, inputPref_incr))
+        elif self.getForceField() == FORCEFIELD_CAGO or self.getForceField() == FORCEFIELD_AAGO :
+            runCommand("cp %s.top %s.top" % (inputPref, inputPref_incr))
 
     def PCAStep(self):
 
@@ -248,6 +248,11 @@ class ProtNMMDRefine(ProtGenesis):
                 for j in range(matrix.shape[1]):
                     f.write(" %e   %e   %e\n" %  (matrix[i,j, 0], matrix[i,j, 1], matrix[i,j, 1]))
 
+
+        self._iter -= 1
+        np.savetxt(self.getInputPDBprefix()+"_pca.txt", Y)
+        self._iter += 1
+
     def prepareOutputStep(self):
         for i in range(self.getNumberOfSimulation()):
             outPref = self._getExtraPath("output_%s"% str(i+1).zfill(6))
@@ -270,9 +275,14 @@ class ProtNMMDRefine(ProtGenesis):
                             print("Incomplete DCD file")
                 numpyArr2dcd(dcdarr,outPref+ ".dcd")
 
+            # output pdb file
             pdbfile = self.getOutputPrefix(i)+".pdb"
             if os.path.isfile(pdbfile):
-                runCommand("cp %s %s.pdb" % (pdbfile, outPref))
+                runCommand("mv %s %s.pdb" % (pdbfile, outPref))
+
+            pdbfile = self.getOutputPrefix(i)+".nma"
+            if os.path.isfile(pdbfile):
+                runCommand("mv %s %s.nma" % (pdbfile, outPref))
 
     def runMinimizationStep(self):
 

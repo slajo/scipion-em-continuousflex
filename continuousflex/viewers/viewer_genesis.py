@@ -42,7 +42,7 @@ from matplotlib.pyplot import cm
 class GenesisViewer(ProtocolViewer):
     """ Visualization of results from the GENESIS protocol
     """
-    _label = 'viewer genesis'
+    _label = 'GenesisViewer'
     _targets = [ProtGenesis]
     _environments = [DESKTOP_TKINTER, WEB_DJANGO]
 

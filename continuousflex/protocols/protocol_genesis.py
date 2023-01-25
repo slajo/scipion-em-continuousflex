@@ -461,6 +461,12 @@ class ProtGenesis(EMProtocol):
             createGenesisInput(inp_file, **args)
 
     def getDefaultArgs(self, indexFit=0):
+        """
+        get default argument to run GENESIS
+        @param indexFit:
+        @return:
+
+        """
         inputRTF, inputPRM, inputSTR = self.getCHARMMInputs()
         args = {
             # Inputs files
