@@ -170,7 +170,8 @@ class Plugin(pwem.Plugin):
 
         target_branch = "merge_genesis_1.4"
         cmd = cmd_1 + ' && git clone -b %s https://github.com/continuousflex-org/MD-NMMD-Genesis.git . ; autoreconf -fi ;' \
-                      ' ./configure LDFLAGS=-L%s ; make install;' % (target_branch, lib_path)
+                      ' ./configure LDFLAGS=-L\"%s\" FFLAGS=\"-fallow-argument-mismatch -ffree-line-length-none\";' \
+                      ' make install;' % (target_branch, lib_path)
         env.addPackage('MD-NMMD-Genesis', version=MD_NMMD_GENESIS_VERSION,
                        buildDir='MD-NMMD-Genesis', tar="void.tgz",
                        commands=[(cmd , ["bin/atdyn"])],
