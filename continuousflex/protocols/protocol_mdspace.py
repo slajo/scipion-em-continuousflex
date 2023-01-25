@@ -31,6 +31,7 @@ from pwem.constants import ALIGN_PROJ
 from continuousflex.protocols.convert import matrix2eulerAngles
 
 class ProtMDSPACE(ProtGenesis):
+
     """ Protocol to perform NMMD refinement using GENESIS """
     _label = 'NMMD refine'
 
@@ -343,3 +344,18 @@ class ProtMDSPACE(ProtGenesis):
     def getAlignementprefix(self, itr=None):
         if itr is None : itr = self._iter
         return self._getExtraPath("alignement_iter_%s.xmd"%str(itr+1).zfill(3))
+
+    # --------------------------- INFO functions --------------------------------------------
+    def _summary(self):
+        summary = []
+        return summary
+
+    def _validate(self):
+        errors = []
+        return errors
+
+    def _citations(self):
+        return ['harastani2022continuousflex','vuillemot2022NMMD']
+
+    def _methods(self):
+        return []
