@@ -37,7 +37,7 @@ from pyworkflow.utils import runCommand, buildRunCommand
 from xmipp3.convert import writeSetOfParticles, writeSetOfVolumes
 from pwem.convert.atom_struct import cifToPdb
 from continuousflex import Plugin
-
+from pyworkflow.utils.path import makePath
 
 import pwem.emlib.metadata as md
 import re
@@ -314,6 +314,9 @@ class ProtGenesis(EMProtocol):
         # --------------------------- INSERT steps functions --------------------------------------------
 
     def _insertAllSteps(self):
+        # make path
+        self._insertFunctionStep("makePathStep")
+
         # Create INP files
         self._insertFunctionStep("createGenesisInputStep")
 
@@ -338,13 +341,18 @@ class ProtGenesis(EMProtocol):
                 self.warning("Warning : Can not use parallel computation for GENESIS,"
                                     " please install \"GNU parallel\". Running in linear mode.")
             for i in range(self.getNumberOfSimulation()):
-                inp_file = self._getExtraPath("INP_%s" % str(i + 1).zfill(6))
+                inp_file = self.getGenesisInputFile(i)
                 outPref = self.getOutputPrefix(i)
                 self._insertFunctionStep("runSimulation", inp_file, outPref)
 
         # Create output data
         self._insertFunctionStep("createOutputStep")
 
+
+    def makePathStep(self):
+        makePath(self.getGenFiles())
+        makePath(self.getEmdFiles())
+        makePath(self._getTmpPath())
     # --------------------------- Convert Input PDBs --------------------------------------------
 
     def convertInputPDBStep(self):
@@ -419,12 +427,12 @@ class ProtGenesis(EMProtocol):
         :return None:
         """
         # Convert EM data
+
         n_em = self.getNumberOfInputEM()
         dest_ext = "mrc" if self.EMfitChoice.get() == EMFIT_VOLUMES else "spi"
         self.readInputEMMetadata()
-        inputMdName = self._getExtraPath("inputEM.xmd")
-        runProgram("xmipp_image_convert", "-i %s --oext %s --oroot %s" %
-                       (inputMdName, dest_ext, self._getExtraPath("inputEM_")))
+        runProgram("xmipp_image_convert", "-i %s/inputEM.xmd --oext %s --oroot %s/inputEM_" %
+                       (self.getEmdFiles(), dest_ext, self.getEmdFiles()))
 
         # Fix volumes origin
         if self.EMfitChoice.get() == EMFIT_VOLUMES:
@@ -457,7 +465,7 @@ class ProtGenesis(EMProtocol):
         """
         for indexFit in range(self.getNumberOfSimulation()):
             # INP file name
-            inp_file = self._getExtraPath("INP_%s" % str(indexFit + 1).zfill(6))
+            inp_file = self.getGenesisInputFile(indexFit)
             args = self.getDefaultArgs(indexFit)
             createGenesisInput(inp_file, **args)
 
@@ -560,10 +568,9 @@ class ProtGenesis(EMProtocol):
 
         # Build command
         programname = os.path.join( Plugin.getVar("GENESIS_HOME"), "bin/atdyn")
-        extradir = self._getExtraPath()
         outPath, outName = os.path.split(self.getOutputPrefix())
         outLog = os.path.join(outPath,re.sub("output_\d+", "output_{}",outName))
-        params = "%s/INP_{} > %s.log " %(extradir, outLog)
+        params = "%s/INP_{} > %s.log " %(self.getGenFiles(), outLog)
         cmd = buildRunCommand(programname, params, numberOfMpi=numberOfMpiPerFit, hostConfig=self._stepsExecutor.hostConfig,
                               env=env)
         # Build parallel command
@@ -746,6 +753,9 @@ class ProtGenesis(EMProtocol):
                 initFn.append(self.inputPDB.get().getFileName())
         return initFn
 
+    def getGenesisInputFile(self, index=0):
+        return "%s/INP_%s" % (self.getGenFiles(),str(index + 1).zfill(6))
+
     def getInputPDBprefix(self, index=0):
         """
         Get the input PDB prefix of the specified index
@@ -764,7 +774,7 @@ class ProtGenesis(EMProtocol):
         :param int index: index of the EM data
         :return str: Input EM data prefix
         """
-        prefix = self._getExtraPath("inputEM_%s")
+        prefix = self.getEmdFiles()+"/inputEM_%s"
         if self.getNumberOfInputEM() == 0:
             return ""
         elif self.getNumberOfInputEM() == 1:
@@ -795,6 +805,10 @@ class ProtGenesis(EMProtocol):
         else:
             outputPrefix.append(self._getExtraPath("output_%s" % str(index + 1).zfill(6)))
         return outputPrefix
+    def getEmdFiles(self):
+        return self._getExtraPath("EM_data")
+    def getGenFiles(self):
+        return self._getExtraPath("genesis_inputs")
 
     def getRigidBodyParams(self, index=0):
         """
@@ -841,7 +855,7 @@ class ProtGenesis(EMProtocol):
                 raise RuntimeError("Multiple restart not implemented")
             rstfile = self.getInputPDBprefix(index) + ".rst"
             if not os.path.exists(rstfile):
-                runCommand("cp %s.rst %s" % (self.restartProt.get().getOutputPrefix(index), rstfile))
+                runCommand("cp %s.rst %s" % (self.restartProt.get().getOutputPrefix(), rstfile))
             return rstfile
         else:
             return None
@@ -864,7 +878,8 @@ class ProtGenesis(EMProtocol):
         return self._inputEMMetadata
 
     def readInputEMMetadata(self):
-        nameMd = self._getExtraPath("inputEM.xmd")
+        nameMd = "%s/inputEM.xmd"%self.getEmdFiles()
+
         if self.EMfitChoice.get() == EMFIT_IMAGES:
             writeSetOfParticles(self.inputImage.get(), nameMd)
             inputEMMetadata = md.MetaData(nameMd)

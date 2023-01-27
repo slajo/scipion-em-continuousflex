@@ -71,13 +71,13 @@ class MDSPACEViewer(GenesisViewer):
     def _plotPCA(self, p):
         axes_str = str.split(self.pcaAxes.get())
         axes = []
-        for i in axes_str: axes.append(int(i.strip()))
+        for i in axes_str: axes.append(int(i.strip())-1)
 
         plotter = FlexPlotter(1,self.protocol.numberOfIter.get()
                               , figsize=(self.protocol.numberOfIter.get()*3,3))
         for i in range(self.protocol.numberOfIter.get()):
             self.protocol._iter= i
-            pca = np.loadtxt(self.protocol.getInputPDBprefix() + "_pca.txt")[:,axes]
+            pca = np.loadtxt(self.protocol.getPCAPrefix() + "_matrix.txt")[:,axes]
             ax = plotter.createSubPlot("PCA iter "+str(i+1), "component " + axes_str[0],
                                    "component " + axes_str[1], xpos=1, ypos=i+1)
             ax.scatter(pca[:,0],pca[:,1])
@@ -85,7 +85,7 @@ class MDSPACEViewer(GenesisViewer):
     def _plotFE(self, p):
         axes_str = str.split(self.feAxes.get())
         axes = []
-        for i in axes_str: axes.append(int(i.strip()))
+        for i in axes_str: axes.append(int(i.strip())-1)
         size =self.freeEnergySize.get()
 
         plotter = FlexPlotter(1,self.protocol.numberOfIter.get()
@@ -93,7 +93,7 @@ class MDSPACEViewer(GenesisViewer):
         for i in range(self.protocol.numberOfIter.get()):
             self.protocol._iter= i
 
-            data = np.loadtxt(self.protocol.getInputPDBprefix() + "_pca.txt")[:,axes]
+            data = np.loadtxt(self.protocol.getPCAPrefix() + "_matrix.txt")[:,axes]
             xmin = np.min(data[:,0])
             xmax = np.max(data[:,0])
             ymin = np.min(data[:,1])

@@ -86,8 +86,11 @@ class TestMDSPACE(TestWorkflow):
         # ------------------------- synth images --------------------------------
         target_images = self.newProtocol(FlexProtSynthesizeImages,
                                          inputModes=protNMA.outputModes,
-                                         numberOfVolumes=10,
+                                         numberOfVolumes=100,
                                          samplingRate=2.0,
+                                         modesAmplitudeRange=50,
+                                         seedOption=False,
+                                         noiseCTFChoice=1,
                                          volumeSize=64)
         target_images.setObjLabel('Target particles')
         self.launchProtocol(target_images)
@@ -98,15 +101,15 @@ class TestMDSPACE(TestWorkflow):
                                                  inputType=INPUT_RESTART,
                                                  restartProt=protGenesisMin,
 
-                                                 simulationType=SIMULATION_NMMD,
-                                                 time_step=0.0005,
-                                                 n_steps=1000,
+                                                 simulationType=SIMULATION_MD,
+                                                 time_step=0.001,
+                                                 n_steps=5000,
                                                  eneout_period=100,
                                                  crdout_period=100,
                                                  nbupdate_period=10,
-                                                 nm_number=6,
-                                                 nm_mass=1.0,
-                                                 inputModes=protNMA.outputModes,
+                                                 # nm_number=6,
+                                                 # nm_mass=1.0,
+                                                 # inputModes=protNMA.outputModes,
 
                                                  implicitSolvent=IMPLICIT_SOLVENT_NONE,
                                                  electrostatics=ELECTROSTATICS_CUTOFF,
@@ -120,7 +123,7 @@ class TestMDSPACE(TestWorkflow):
 
                                                  boundary=BOUNDARY_NOBC,
                                                  EMfitChoice=EMFIT_IMAGES,
-                                                 constantK="500",
+                                                 constantK="100",
                                                  emfit_sigma=2.0,
                                                  emfit_tolerance=0.1,
                                                  inputImage=target_images.outputImages,

@@ -264,4 +264,4 @@ class FlexProtDimredPdb(ProtAnalysis3D):
         for i in range(self.reducedDim.get()):
             with open("%s/vec.%i"%(prefix,i+1), "w") as f:
                     for j in range(matrix.shape[1]):
-                        f.write(" %e   %e   %e\n" % (matrix[i,j, 0], matrix[i,j, 1], matrix[i,j, 1]))
+                        f.write(" %e   %e   %e\n" % (matrix[i,j, 0], matrix[i,j, 1], matrix[i,j, 2]))

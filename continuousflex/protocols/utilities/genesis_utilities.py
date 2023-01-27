@@ -87,16 +87,15 @@ def readLogFile(log_file):
                     for i in range(1,len(header)):
                         dic[header[i]] = []
                 else:
+                    print(line)
                     splitline = line.split()
-                    if len(splitline) == len(header):
+                    if len(splitline) >= len(header):
                         for i in range(1,len(header)):
                             try :
                                 dic[header[i]].append(float(splitline[i]))
                             except ValueError:
                                 pass
-
     return dic
-
 def dcd2numpyArr(filename):
     print("> Reading dcd file %s"%filename)
     BYTESIZE = 4

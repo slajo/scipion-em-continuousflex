@@ -104,6 +104,12 @@ class GenesisViewer(ProtocolViewer):
                       label='Display final RMSD',
                       help='TODO',condition= "compareToPDB")
 
+        if self.protocol.simulationType.get() == SIMULATION_NMMD\
+                or self.protocol.simulationType.get() == SIMULATION_RENMMD:
+            group = form.addGroup('NMMD')
+            group.addParam('displayNMMD', params.LabelParam,
+                          label='Display normal modes time series',
+                          help='TODO')
 
         if self.protocol.EMfitChoice.get() != EMFIT_NONE:
             group = form.addGroup('Cryo EM fitting')
@@ -116,6 +122,7 @@ class GenesisViewer(ProtocolViewer):
             'displayChimera': self._plotChimera,
             'displayEnergy': self._plotEnergy,
             'displayCC': self._plotCC,
+            'displayNMMD': self._plotNMMD,
             'displayRMSDts': self._plotRMSDts,
             'displayRMSD': self._plotRMSD,
             'displayTrajVMD': self._plotTrajVMD,
@@ -218,7 +225,29 @@ class GenesisViewer(ProtocolViewer):
 
         self.genesisPlotter(title="Energy (kcal/mol)", data=enelist, ndata=len(enelist),
                             nrep=len(enelist[0]), labels=labels)
+    def _plotNMMD(self, paramName):
+        nm = {}
+        for i in self.getSimulationList():
+            outputPrefix = self.getOutputPrefixAll(i)
+            for j in outputPrefix:
+                log_file = readLogFile(j + ".log")
+                for e in range(self.protocol.getNumberOfNormalModes()):
+                    nm_name = "NM_AMP%s"%str(e+1).zfill(3)
+                    if nm_name in log_file:
+                        if nm_name in nm :
+                            nm[nm_name].append(log_file[nm_name])
+                        else:
+                            nm[nm_name] = [log_file[nm_name]]
+        nmlist =[]
+        labels=[]
+        for i in nm :
+            labels.append(i)
+            nmlist.append(nm[i])
 
+        print(nmlist)
+        print(labels)
+        self.genesisPlotter(title="Normal Mode Amplitude", data=nmlist, ndata=len(nmlist),
+                            nrep=len(nmlist[0]), labels=labels)
     def _plotEnergyDetail(self):
         ene_default = ["BOND", "ANGLE", "UREY-BRADLEY", "DIHEDRAL", "IMPROPER", "CMAP", "VDWAALS", "ELECT", "NATIVE_CONTACT",
                "NON-NATIVE_CONT", "RESTRAINT_TOTAL"]
@@ -256,7 +285,9 @@ class GenesisViewer(ProtocolViewer):
             else:
                 labels.append("CC %s" % str(i + 1))
             for j in outputPrefix:
+                print(j)
                 log_file = readLogFile(j + ".log")
+                print(log_file)
                 if 'RESTR_CVS001' in log_file:
                     cc_rep.append(log_file['RESTR_CVS001'])
                 else:
