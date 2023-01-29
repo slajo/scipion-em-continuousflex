@@ -51,16 +51,14 @@ class MDSPACEViewer(GenesisViewer):
         GenesisViewer._defineParams(self, form)
         group = form.addGroup('MDSPACE')
         group.addParam('displayPCA', params.LabelParam,
-                      label='Display PCA space',
-                      help='TODO')
+                      label='Display PCA space')
         group.addParam('pcaAxes', params.StringParam, default="1 2",
                        label='Axes to display' )
         group.addParam('displayFE', params.LabelParam,
-                      label='Display free energy',
-                      help='TODO')
+                      label='Display free energy')
         group.addParam('feAxes', params.StringParam, default="1 2",
                        label='Axes to display' )
-        group.addParam('freeEnergySize', params.IntParam, default=100,
+        group.addParam('freeEnergySize', params.IntParam, default=20,
                        label='Sampling size' )
     def _getVisualizeDict(self):
         dict = GenesisViewer._getVisualizeDict(self)

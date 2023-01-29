@@ -70,7 +70,7 @@ class ProtGenesis(EMProtocol):
         # INPUT_RESTART
         form.addParam('restartProt', params.PointerParam, label="Input GENESIS protocol",
                       pointerClass="ProtGenesis",
-                       help='Provide a GENESIS protocol to restart.', condition="inputType==%i"%INPUT_RESTART)
+                       help='Provide a MD-NMMD-GENESIS protocol to restart.', condition="inputType==%i"%INPUT_RESTART)
 
         # INPUT_NEW_SIM
         form.addParam('inputPDB', params.PointerParam,
@@ -167,10 +167,9 @@ class ProtGenesis(EMProtocol):
                            "to accelerate NM integration, however can make the simulation unstable.",
                        condition="simulationType==2 or simulationType==4",expertLevel=params.LEVEL_ADVANCED)
         group.addParam('nm_mass', params.FloatParam, default=10.0, label='NM mass',
-                      help="Mass value of Normal modes for NMMD", condition="simulationType==2 or simulationType==4",
+                      help="Mass value of Normal modes for NMMD. Lower values accelerate the fitting but can make the "
+                           "simulation unstable", condition="simulationType==2 or simulationType==4",
                       expertLevel=params.LEVEL_ADVANCED)
-        # group.addParam('nm_init', params.FileParam, label='NM init', default=None,
-        #               help="TODO", condition="simulationType==2 or simulationType==4",expertLevel=params.LEVEL_ADVANCED)
         group = form.addGroup('REMD parameters', condition="simulationType==3 or simulationType==4")
         group.addParam('exchange_period', params.IntParam, default=1000, label='Exchange Period',
                       help="Number of MD steps between replica exchanges", condition="simulationType==3 or simulationType==4")

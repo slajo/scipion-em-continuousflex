@@ -36,8 +36,8 @@ from xmipp3.base import XmippMdRow
 
 class ProtMDSPACE(ProtGenesis):
 
-    """ Protocol to perform NMMD refinement using GENESIS """
-    _label = 'NMMD refine'
+    """ Protocol to perform MDSPACE using GENESIS """
+    _label = 'MDSPACE'
 
     def __init__(self, **kwargs):
         ProtGenesis.__init__(self, **kwargs)
@@ -46,13 +46,13 @@ class ProtMDSPACE(ProtGenesis):
 
         # --------------------------- DEFINE param functions --------------------------------------------
     def _defineParams(self, form):
-        form.addSection(label='Refinement')
+        form.addSection(label='MDSPACE Refinement')
 
         form.addParam('numberOfIter', params.IntParam, label="Number of iterations", default=3,
-                      help="TODO", important=True)
+                      help="Number of round of fitting for MDSPACE", important=True)
 
         form.addParam('numberOfPCA', params.IntParam, label="Number of PCA component", default=5,
-                      help="TODO", important=True)
+                      help="Number of principal component to keep at each round", important=True)
 
         ProtGenesis._defineParams(self, form)
 
