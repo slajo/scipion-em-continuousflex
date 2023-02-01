@@ -94,8 +94,6 @@ class FlexProtPdbDimredViewer(ProtocolViewer):
                        label='Axes to display' )
         group.addParam('freeEnergySize', IntParam, default=100,
                        label='Sampling size' )
-        group.addParam('freeEnergyInterpolation', StringParam, default="bilinear",
-                       label='Interpolation method' )
 
         group = form.addGroup("Animation tool")
 
@@ -107,10 +105,6 @@ class FlexProtPdbDimredViewer(ProtocolViewer):
         group.addParam('inputSet', PointerParam, pointerClass ='SetOfParticles,SetOfVolumes',
                       label='(Optional) Em data for cluster animation',  allowsNull=True,
                       help="Provide a EM data set that match the PDB data set to visualize animation on 3D reconstructions")
-
-
-        # form.addParam("dataSet", StringParam, default= "", label="Data set label")
-
 
         group = form.addGroup("Figure parameters")
 
@@ -198,7 +192,6 @@ class FlexProtPdbDimredViewer(ProtocolViewer):
 
         data = np.array([p.getData()[axes] for p in self.getData()])
         size =self.freeEnergySize.get()
-        interp =self.freeEnergyInterpolation.get()
         xmin = np.min(data[:,0])
         xmax = np.max(data[:,0])
         ymin = np.min(data[:,1])
@@ -215,9 +208,12 @@ class FlexProtPdbDimredViewer(ProtocolViewer):
         plotter = FlexPlotter()
         ax = plotter.createSubPlot("Free energy", "component "+axes_str[0],
                                         "component " + axes_str[1])
-        im = ax.imshow(img.T[::-1,:],
-                   cmap = "jet", interpolation=interp,
-                   extent=[xmin,xmax,ymin,ymax])
+        # im = ax.imshow(img.T[::-1,:],
+        #            cmap = "jet", interpolation=interp,
+        #            extent=[xmin,xmax,ymin,ymax])
+
+        xx, yy = np.mgrid[xmin:xmax:size * 1j, ymin:ymax:size * 1j]
+        im = ax.contourf(xx, yy, img, cmap='jet')
         cbar = plotter.figure.colorbar(im)
         cbar.set_label("$\Delta G / k_{B}T$")
         plotter.show()
@@ -264,18 +260,6 @@ class FlexProtPdbDimredViewer(ProtocolViewer):
     def loadData(self):
         data = Data()
         pdb_matrix = np.loadtxt(self.protocol.getOutputMatrixFile())
-
-        # dataSet = self.dataSet.get().split(";")
-        # n_data = len(dataSet)
-        # if n_data >1:
-        #     weights = []
-        #     for i in range(n_data):
-        #         if dataSet[i] != '':
-        #             for j in range(int(dataSet[i])):
-        #                 weights.append(i/n_data)
-        #
-        # else:
-        #
         weights = [0 for i in range(pdb_matrix.shape[0])]
 
         for i in range(pdb_matrix.shape[0]):

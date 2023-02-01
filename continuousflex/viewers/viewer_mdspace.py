@@ -25,8 +25,8 @@
 
 from pyworkflow.viewer import (ProtocolViewer, DESKTOP_TKINTER, WEB_DJANGO)
 import pyworkflow.protocol.params as params
-from continuousflex.protocols.protocol_mdspace import ProtMDSPACE
-from continuousflex.viewers.viewer_genesis import GenesisViewer
+from continuousflex.protocols.protocol_mdspace import FlexProtMDSPACE
+from continuousflex.viewers.viewer_genesis import FlexGenesisViewer
 from continuousflex.protocols.utilities.genesis_utilities import *
 
 from .plotter import FlexPlotter
@@ -40,15 +40,15 @@ import re
 
 from matplotlib.pyplot import cm
 
-class MDSPACEViewer(GenesisViewer):
+class FlexMDSPACEViewer(FlexGenesisViewer):
     """ Visualization of results from the MDSPACE protocol
     """
     _label = 'MDSPACE Viewer'
-    _targets = [ProtMDSPACE]
+    _targets = [FlexProtMDSPACE]
     _environments = [DESKTOP_TKINTER, WEB_DJANGO]
 
     def _defineParams(self, form):
-        GenesisViewer._defineParams(self, form)
+        FlexGenesisViewer._defineParams(self, form)
         group = form.addGroup('MDSPACE')
         group.addParam('displayPCA', params.LabelParam,
                       label='Display PCA space')
@@ -61,7 +61,7 @@ class MDSPACEViewer(GenesisViewer):
         group.addParam('freeEnergySize', params.IntParam, default=20,
                        label='Sampling size' )
     def _getVisualizeDict(self):
-        dict = GenesisViewer._getVisualizeDict(self)
+        dict = FlexGenesisViewer._getVisualizeDict(self)
         dict['displayPCA'] = self._plotPCA
         dict['displayFE'] = self._plotFE
         return dict
@@ -109,8 +109,10 @@ class MDSPACEViewer(GenesisViewer):
 
             ax = plotter.createSubPlot("Free energy iter "+str(i+1), "component " + axes_str[0],
                                    "component " + axes_str[1], xpos=1, ypos=i+1)
-            cfset = ax.contourf(xx, yy, img, cmap='jet')
+            im = ax.contourf(xx, yy, img, cmap='jet')
             # im = ax.imshow(img.T[::-1, :],
             #                cmap="jet", interpolation="bicubic",
             #                extent=[xmin, xmax, ymin, ymax])
+            cbar = plotter.figure.colorbar(im)
+            cbar.set_label("$\Delta G / k_{B}T$")
         plotter.show()

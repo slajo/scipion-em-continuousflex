@@ -33,12 +33,14 @@ import os
 import glob
 from matplotlib.pyplot import cm
 
+COMPARE_PDB_INIT = 0
+COMPARE_PDB_OTHER = 1
 
-class GenesisViewer(ProtocolViewer):
+class FlexGenesisViewer(ProtocolViewer):
     """ Visualization of results from the GENESIS protocol
     """
-    _label = 'GenesisViewer'
-    _targets = [ProtGenesis]
+    _label = 'MD-NMMD-Genesis Viewer'
+    _targets = [FlexProtGenesis]
     _environments = [DESKTOP_TKINTER, WEB_DJANGO]
 
     def _defineParams(self, form):
@@ -81,22 +83,23 @@ class GenesisViewer(ProtocolViewer):
                       help='Show time series of the potentials used in MD simulation/Minimization')
 
         group = form.addGroup('RMSD analysis')
-        group.addParam('compareToPDB', params.EnumParam, default=0,
+        group.addParam('compareToPDB', params.EnumParam, default=COMPARE_PDB_INIT,
                       label="Compare to ", choices=['initial PDB', 'another PDB'],
                       help='Perform RMSD between the trajectory and another PDB')
         group.addParam('targetPDB', params.PathParam, default=None,
                         label="Target PDB (s)", important=True,
                         help=' Target PDBs to compute RMSD against. Atom mathcing is performed between '
                              ' the output PDBs and the target PDBs. Use the file pattern as file location with /*.pdb',
-                       condition= "compareToPDB==1")
+                       condition= "compareToPDB==%i"%COMPARE_PDB_OTHER)
         group.addParam('referencePDB', params.PathParam, default="",
                         label="Intial PDB (optional)",
                         help='Atom matching will replace the structural information of the output PDBs by the new PDB ',
-                        expertLevel=params.LEVEL_ADVANCED,condition= "compareToPDB==1")
+                        expertLevel=params.LEVEL_ADVANCED,condition= "compareToPDB==%i"%COMPARE_PDB_OTHER)
 
         group.addParam('alignTarget', params.BooleanParam, default=False,
                         label="Align Target PDB",
-                        help='Rigid body align (rotation +translation) the PDBs before RMSD analysis',condition= "compareToPDB==1")
+                        help='Rigid body align (rotation +translation) the PDBs before RMSD analysis',
+                       condition= "compareToPDB==%i"%COMPARE_PDB_OTHER)
 
         group.addParam('displayRMSDts', params.LabelParam,
                       label='Display RMSD time series')
@@ -144,7 +147,7 @@ class GenesisViewer(ProtocolViewer):
                     count+=1
                     f.write("color #%s lime \n"%count)
 
-            if self.compareToPDB.get() == 1:
+            if self.compareToPDB.get() == COMPARE_PDB_OTHER:
                 f.write("open %s \n" % os.path.abspath(self.getTargetPDB(index)))
                 count+=1
                 f.write("color #%s orange \n"%count)
@@ -180,7 +183,7 @@ class GenesisViewer(ProtocolViewer):
                 f.write("mol modstyle 1 0 Isosurface 0.5 0 0 0 1 1  \n")
                 f.write("mol modmaterial 1 0 Transparent \n")
 
-            if self.compareToPDB.get() == 1:
+            if self.compareToPDB.get() == COMPARE_PDB_OTHER:
                 targetFile = self.getTargetPDB(index)
                 f.write("set nf [molinfo top get numframes]\n")
                 f.write("mol new %s waitfor all\n" %targetFile)
@@ -322,8 +325,6 @@ class GenesisViewer(ProtocolViewer):
                 if 1 < nrep <= nmax:
                     if ndata == 1 :
                         ax.plot(x, data[i][j], color= colors[j], alpha=0.5, label="#%i"%(j+1))
-                    # else:
-                    #     ax.plot(x, data[i][j], color= colors[i], alpha=0.5)
                 if nrep == 1 and ndata <= nmax:
                     ax.plot(x, data[i][j], color= colors[i],label=labels[i])
         if ndata > nmax :
