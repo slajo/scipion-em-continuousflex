@@ -247,8 +247,6 @@ class FlexGenesisViewer(ProtocolViewer):
             labels.append(i)
             nmlist.append(nm[i])
 
-        print(nmlist)
-        print(labels)
         self.genesisPlotter(title="Normal Mode Amplitude", data=nmlist, ndata=len(nmlist),
                             nrep=len(nmlist[0]), labels=labels)
     def _plotEnergyDetail(self):
@@ -288,9 +286,7 @@ class FlexGenesisViewer(ProtocolViewer):
             else:
                 labels.append("CC %s" % str(i + 1))
             for j in outputPrefix:
-                print(j)
                 log_file = readLogFile(j + ".log")
-                print(log_file)
                 if 'RESTR_CVS001' in log_file:
                     cc_rep.append(log_file['RESTR_CVS001'])
                 else:

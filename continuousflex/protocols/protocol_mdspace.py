@@ -382,7 +382,7 @@ class FlexProtMDSPACE(FlexProtGenesis):
         return errors
 
     def _citations(self):
-        return ['harastani2022continuousflex','vuillemot2022NMMD','vuillemot2023mdspace']
+        return ['vuillemot2023mdspace','vuillemot2022NMMD','harastani2022continuousflex']
 
     def _methods(self):
         return []

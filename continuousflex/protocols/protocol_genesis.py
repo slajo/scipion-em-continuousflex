@@ -69,7 +69,7 @@ class FlexProtGenesis(EMProtocol):
 
         # INPUT_RESTART
         form.addParam('restartProt', params.PointerParam, label="Input GENESIS protocol",
-                      pointerClass="ProtGenesis",
+                      pointerClass="FlexProtGenesis",
                        help='Provide a MD-NMMD-GENESIS protocol to restart.', condition="inputType==%i"%INPUT_RESTART)
 
         # INPUT_NEW_SIM
@@ -151,9 +151,8 @@ class FlexProtGenesis(EMProtocol):
         group = form.addGroup('NMMD parameters', condition="simulationType==%i or simulationType==%i"%(SIMULATION_NMMD,
                                SIMULATION_RENMMD))
         group.addParam('inputModes', params.PointerParam, pointerClass="SetOfNormalModes", label='Input Modes',
-                       default=None,
-                       help="Input set of normal modes", condition="simulationType==%i or simulationType==%i"%(SIMULATION_NMMD,
-                               SIMULATION_RENMMD))
+                       default=None, allowsNull = True,
+                       help="Input set of normal modes")
         group.addParam('modeList', params.NumericRangeParam, expertLevel=params.LEVEL_ADVANCED,
                       label="Modes selection", allowsNull = True, default="",
                       help='Select the normal modes that will be used for analysis. \n'
@@ -162,8 +161,7 @@ class FlexProtGenesis(EMProtocol):
                            '   Examples:\n'
                            ' "7,8-10" -> [7,8,9,10]\n'
                            ' "8, 10, 12" -> [8,10,12]\n'
-                           ' "8 9, 10-12" -> [8,9,10,11,12])\n', condition="simulationType==%i or simulationType==%i"%(SIMULATION_NMMD,
-                               SIMULATION_RENMMD))
+                           ' "8 9, 10-12" -> [8,9,10,11,12])\n')
 
         group.addParam('nm_dt', params.FloatParam, label='NM time step', default=0.001,
                       help="Time step of normal modes integration. Should be equal to MD time step. Could be increase "
@@ -171,9 +169,7 @@ class FlexProtGenesis(EMProtocol):
                        condition="simulationType==2 or simulationType==4",expertLevel=params.LEVEL_ADVANCED)
         group.addParam('nm_mass', params.FloatParam, default=10.0, label='NM mass',
                       help="Mass value of Normal modes for NMMD. Lower values accelerate the fitting but can make the "
-                           "simulation unstable", condition="simulationType==%i or simulationType==%i"%(SIMULATION_NMMD,
-                               SIMULATION_RENMMD),
-                      expertLevel=params.LEVEL_ADVANCED)
+                           "simulation unstable",   expertLevel=params.LEVEL_ADVANCED)
         group = form.addGroup('REMD parameters', condition="simulationType==%i or simulationType==%i"%(SIMULATION_REMD,
                                SIMULATION_RENMMD))
         group.addParam('exchange_period', params.IntParam, default=1000, label='Exchange Period',
