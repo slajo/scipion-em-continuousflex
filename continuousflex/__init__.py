@@ -43,7 +43,7 @@ MODEL_CONTINUOUSFLEX_ENV_ACTIVATION_VAR = "MODEL_CONTINUOUSFLEX_ENV_ACTIVATION"
 # Use this general activation variable when installed outside Scipion
 MODEL_CONTINUOUSFLEX_ACTIVATION_VAR = "MODEL_CONTINUOUSFLEX_ACTIVATION"
 
-__version__ = "3.3.11"
+__version__ = "3.3.12"
 
 
 class Plugin(pwem.Plugin):
