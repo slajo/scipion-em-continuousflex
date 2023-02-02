@@ -35,6 +35,7 @@ import subprocess
 import re
 import pyworkflow.utils as pwutils
 
+
 _logo = "logo.png"
 
 MD_NMMD_GENESIS_VERSION = "1.1"
@@ -135,7 +136,6 @@ class Plugin(pwem.Plugin):
             FFLAGS = "-fallow-argument-mismatch -ffree-line-length-none"
         else:
             FFLAGS = "-ffree-line-length-none"
-
         env.addPackage('MD-NMMD-Genesis', version=MD_NMMD_GENESIS_VERSION,
                        buildDir='MD-NMMD-Genesis', tar="void.tgz",
                        commands=[(
