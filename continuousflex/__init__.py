@@ -87,8 +87,8 @@ class Plugin(pwem.Plugin):
         return cls.getActiveVersion().startswith(__version__)
 
     @classmethod
-    def getCondaLibPath(cls, env):
-        return env.getEm('ContinuousFlex-' + __version__) + '/lib'
+    def getCondaLibPath(cls):
+        return cls.getVar(CONTINUOUSFLEX_HOME) + '/lib'
 
     @classmethod
     def defineBinaries(cls, env):
@@ -126,7 +126,7 @@ class Plugin(pwem.Plugin):
                        target="nma",
                        commands=[('cd ElNemo; make; mv nma_* ..', 'nma_elnemo_pdbmat'),
                                  ('cd NMA_cart; LDFLAGS=-L%s make; mv nma_* ..'
-                                  % cls.getCondaLibPath(env) , 'nma_diag_arpack')],
+                                  % cls.getCondaLibPath() , 'nma_diag_arpack')],
                        neededProgs=['gfortran'], default=True)
 
         target_branch = "merge_genesis_1.4"
@@ -142,5 +142,5 @@ class Plugin(pwem.Plugin):
                        commands=[(
                            'git clone -b %s https://github.com/continuousflex-org/MD-NMMD-Genesis.git . ; autoreconf '
                            '-fi ; ./configure LDFLAGS=-L\"%s\" FFLAGS=\"%s\"; make install;'
-                           % (target_branch, cls.getCondaLibPath(env), FFLAGS), ["bin/atdyn"])],
+                           % (target_branch, cls.getCondaLibPath(), FFLAGS), ["bin/atdyn"])],
                        neededProgs=['mpif90'], default=True)
